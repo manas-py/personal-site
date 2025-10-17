@@ -51,6 +51,83 @@ A modern, responsive website built for GitHub Pages deployment. This sample webs
    - Your website will be available at: `https://yourusername.github.io`
    - It may take a few minutes to deploy
 
+## 🌐 Setting Up a Custom Domain
+
+### Step 1: Configure the CNAME file
+
+1. **Edit the CNAME file**:
+   - Open the `CNAME` file in this repository
+   - Replace `yourdomain.com` with your actual domain
+   - Example: `mywebsite.com` or `www.mywebsite.com`
+
+2. **Commit the changes**:
+   ```bash
+   git add CNAME
+   git commit -m "Add custom domain"
+   git push origin main
+   ```
+
+### Step 2: Configure your domain provider
+
+**For most domain providers (GoDaddy, Namecheap, etc.)**:
+
+1. **Add DNS records**:
+   - Type: `CNAME`
+   - Name: `www` (or `@` for apex domain)
+   - Value: `yourusername.github.io`
+   - TTL: 3600 (or default)
+
+2. **For apex domain (without www)**:
+   - Type: `A`
+   - Name: `@`
+   - Value: `185.199.108.153` (GitHub's IP)
+   - Also add: `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+
+### Step 3: Configure GitHub Pages
+
+1. **Go to your repository Settings**
+2. **Navigate to Pages section**
+3. **In the "Custom domain" field**:
+   - Enter your domain (e.g., `mywebsite.com`)
+   - Check "Enforce HTTPS" (recommended)
+4. **Click "Save"**
+
+### Step 4: Update _config.yml (Optional)
+
+If you want to use Jekyll features, update the `_config.yml` file:
+
+```yaml
+# Replace with your custom domain
+url: "https://yourdomain.com"
+baseurl: ""
+
+# Update other settings as needed
+title: "Your Website Title"
+description: "Your website description"
+```
+
+### Step 5: Verify DNS propagation
+
+- Wait 24-48 hours for DNS changes to propagate
+- Check your domain at `https://yourdomain.com`
+- Verify HTTPS is working (may take a few hours)
+
+### Common Issues and Solutions
+
+**Domain not working?**
+- Check DNS propagation: [whatsmydns.net](https://www.whatsmydns.net/)
+- Ensure CNAME file has correct domain
+- Verify GitHub Pages settings
+
+**HTTPS not working?**
+- Wait 24 hours after adding custom domain
+- Check "Enforce HTTPS" in GitHub Pages settings
+- Clear browser cache
+
+**Subdomain vs Apex domain?**
+- `www.yourdomain.com` - Use CNAME record
+- `yourdomain.com` - Use A records with GitHub's IPs
+
 ### Method 2: Using GitHub Actions (Advanced)
 
 1. Create a `.github/workflows/deploy.yml` file:
