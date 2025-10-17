@@ -17,8 +17,33 @@ A modern, responsive website built for GitHub Pages deployment. This sample webs
 ├── index.html          # Main HTML file
 ├── styles.css          # CSS styles and responsive design
 ├── script.js           # JavaScript for interactivity
+├── _config.yml         # Jekyll configuration file
+├── CNAME               # Custom domain configuration
 └── README.md           # This file
 ```
+
+## ⚙️ Understanding _config.yml
+
+The `_config.yml` file is a Jekyll configuration file that GitHub Pages uses to build your site. It contains:
+
+- **Site metadata**: Title, description, author info
+- **Build settings**: Markdown processor, theme settings
+- **Custom domain**: URL configuration for your domain
+- **SEO settings**: Search engine optimization
+- **Plugin configuration**: Jekyll plugins and features
+
+**Key settings for custom domains**:
+```yaml
+# Uncomment and update these lines for custom domain
+url: "https://yourdomain.com"  # Your custom domain
+baseurl: ""                    # Leave empty for root domain
+```
+
+**You don't need to modify _config.yml** unless you want to:
+- Use Jekyll features (blog posts, collections)
+- Add SEO metadata
+- Configure plugins
+- Set up analytics
 
 ## 🎨 Sections
 

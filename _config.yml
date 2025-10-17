@@ -1,21 +1,33 @@
-# Site settings
-title: "My Custom Website"
-description: "A modern, responsive website built for GitHub Pages"
-author: "Your Name"
-email: "your.email@example.com"
+# GitHub Pages Configuration
+# This file tells GitHub Pages how to build your site
 
-# Build settings
+# Basic site information
+title: "My Custom Website"
+description: "A modern, responsive website"
+author: "Your Name"
+
+# IMPORTANT: Custom domain configuration
+# Replace 'yourdomain.com' with your actual custom domain
+# Uncomment the lines below and add your domain:
+# url: "https://yourdomain.com"
+# baseurl: ""
+
+# Example for different domain types:
+# For www subdomain: url: "https://www.yourdomain.com"
+# For apex domain: url: "https://yourdomain.com"
+
+# Build settings (keep these as they are)
 markdown: kramdown
 highlighter: rouge
 theme: minima
 
-# Plugins
+# Plugins for better functionality
 plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
 
-# Exclude from processing
+# Files to exclude from processing
 exclude:
   - README.md
   - Gemfile
@@ -24,96 +36,3 @@ exclude:
   - vendor
   - .git
   - .gitignore
-
-# Include in site
-include:
-  - _pages
-
-# Collections
-collections:
-  pages:
-    output: true
-    permalink: /:name/
-
-# Defaults
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "default"
-
-# Custom domain (uncomment and replace with your domain)
-# url: "https://yourdomain.com"
-# baseurl: ""
-
-# Social links
-social:
-  github: yourusername
-  twitter: yourusername
-  linkedin: yourusername
-
-# SEO
-seo:
-  type: "WebSite"
-  name: "My Custom Website"
-  description: "A modern, responsive website built for GitHub Pages"
-  url: "https://yourusername.github.io"
-  image: "/assets/images/og-image.jpg"
-
-# Analytics (uncomment and add your tracking ID)
-# google_analytics: UA-XXXXXXXXX-X
-
-# Comments (uncomment and configure)
-# disqus:
-#   shortname: your-disqus-shortname
-
-# Pagination
-paginate: 5
-paginate_path: "/page:num/"
-
-# Timezone
-timezone: UTC
-
-# Encoding
-encoding: utf-8
-
-# Safe mode
-safe: true
-
-# Future posts
-future: false
-
-# Unpublished posts
-unpublished: false
-
-# Limit posts
-limit_posts: 0
-
-# Show drafts
-show_drafts: false
-
-# Keep files
-keep_files: [".git", ".gitignore", "README.md"]
-
-# Liquid
-liquid:
-  error_mode: warn
-  strict_filters: false
-  strict_variables: false
-
-# Sass
-sass:
-  style: compressed
-  sass_dir: _sass
-
-# Kramdown
-kramdown:
-  input: GFM
-  hard_wrap: false
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  smart_quotes: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
