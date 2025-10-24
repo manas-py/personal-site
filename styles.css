@@ -10,18 +10,12 @@ html, body {
 }
 
 body {
-    background-image: url('bottom.png'), url('top.png'), url('overlay.png');
-    background-size: cover, cover, cover;
-    background-position: center, center, center;
-    background-repeat: no-repeat, no-repeat, no-repeat;
-    background-attachment: fixed, fixed, fixed;
+    background: url('bottom.png') center/cover no-repeat fixed,
+                url('top.png') center/cover no-repeat fixed,
+                url('overlay.png') center/cover no-repeat fixed;
     background-blend-mode: normal, normal, overlay;
 }
 
-.background-container {
-    display: none;
-}
-
-.content {
+.bg-layer {
     display: none;
 }
