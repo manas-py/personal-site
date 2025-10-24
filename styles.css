@@ -16,14 +16,15 @@ body {
 }
 
 .layer1, .layer2, .layer3 {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .layer1 {
@@ -40,5 +41,6 @@ body {
     background-image: url('overlay.png');
     z-index: 3;
     mix-blend-mode: overlay;
-    opacity: 0.8;
+    opacity: 1;
+    background-blend-mode: overlay;
 }
