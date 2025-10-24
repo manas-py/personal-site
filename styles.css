@@ -29,7 +29,7 @@ body {
 
 .layer1 {
     background-image: url('bottom.png');
-    z-index: 1;
+    z-index: 3;
 }
 
 .layer2 {
@@ -39,7 +39,7 @@ body {
 
 .layer3 {
     background-image: url('overlay.png');
-    z-index: 3;
+    z-index: 1;
     mix-blend-mode: overlay;
     opacity: 1;
     background-blend-mode: overlay;
