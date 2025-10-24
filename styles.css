@@ -7,15 +7,38 @@
 html, body {
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 body {
-    background: url('bottom.png') center/cover no-repeat fixed,
-                url('top.png') center/cover no-repeat fixed,
-                url('overlay.png') center/cover no-repeat fixed;
-    background-blend-mode: normal, normal, overlay;
+    position: relative;
+    background-color: #000;
 }
 
-.bg-layer {
-    display: none;
+.layer1, .layer2, .layer3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.layer1 {
+    background-image: url('bottom.png');
+    z-index: 1;
+}
+
+.layer2 {
+    background-image: url('top.png');
+    z-index: 2;
+}
+
+.layer3 {
+    background-image: url('overlay.png');
+    z-index: 3;
+    mix-blend-mode: overlay;
+    opacity: 0.8;
 }
