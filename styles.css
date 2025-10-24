@@ -34,13 +34,13 @@ body {
 
 .layer2 {
     background-image: url('top.png');
-    z-index: 3;
-    mix-blend-mode: overlay;
-    opacity: 1;
-    background-blend-mode: overlay;
+    z-index: 2;
 }
 
 .layer3 {
     background-image: url('overlay.png');
-    z-index: 2;
+    z-index: 3;
+    mix-blend-mode: overlay;
+    opacity: 1;
+    background-blend-mode: overlay;
 }
