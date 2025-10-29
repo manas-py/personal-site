@@ -15,7 +15,7 @@ body {
     background-color: #000;
 }
 
-.layer1, .layer2, .layer3 {
+.background, .overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -27,20 +27,12 @@ body {
     background-attachment: fixed;
 }
 
-.layer1 {
-    background-image: url('bottom.png');
+.background {
+    background-image: url('bg.png');
     z-index: 1;
 }
 
-.layer2 {
-    background-image: url('top.png');
-    z-index: 2;
-}
-
-.layer3 {
+.overlay {
     background-image: url('overlay.png');
-    z-index: 3;
-    mix-blend-mode: overlay;
-    opacity: 1;
-    background-blend-mode: overlay;
+    z-index: 2;
 }
