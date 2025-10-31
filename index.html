@@ -8,6 +8,7 @@
     :root {
       --pc-width: min(1200px, 92vw);
       --pc-ratio: 959 / 537;
+      --overlay-opacity: .45; /* tweak this to make overlay lighter/darker */
       --pc-slot1-w: 42%; --pc-slot1-top: 5.5%;  --pc-slot1-left: 7%;
       --pc-slot2-w: 31%; --pc-slot2-top: 7.5%;  --pc-slot2-left: 36.5%;
       --pc-slot3-w: 24%; --pc-slot3-top: 7.5%;  --pc-slot3-left: 71.5%;
@@ -54,7 +55,7 @@
     }
 
     .layer { position: absolute; inset: 0; }
-    .overlay { pointer-events: none; z-index: 10; }
+    .overlay { pointer-events: none; z-index: 50; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
 
     .slot { position: absolute; z-index: 3; }
     .slot img { width: 100%; height: auto; display: block; }
