@@ -1,13 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manas Bhandari • Personal Site</title>
+  <style>
+    :root {
+      --pc-width: min(1200px, 92vw);
+      --pc-ratio: 959 / 537;
+      --pc-slot1-w: 42%; --pc-slot1-top: 5.5%;  --pc-slot1-left: 7%;
+      --pc-slot2-w: 31%; --pc-slot2-top: 7.5%;  --pc-slot2-left: 36.5%;
+      --pc-slot3-w: 24%; --pc-slot3-top: 7.5%;  --pc-slot3-left: 71.5%;
+      --pc-slot4-w: 14%; --pc-slot4-top: 35%;   --pc-slot4-left: 20.5%;
+      --pc-slot5-w: 15%; --pc-slot5-top: 34.5%; --pc-slot5-left: 70%;
+      --pc-ktm-btn-gap: 0.5rem;
+      --pc-ktm-btn-top: calc(var(--pc-slot3-top) + 10%);
+      --pc-ktm-btn-left: calc(var(--pc-slot3-left) + 2%);
+    }
+
+    @media (max-width: 800px) {
+      :root {
+        --m-width: min(520px, 96vw);
+        --m-ratio: 768 / 1365;
+        --m-slot1-w: 50%; --m-slot1-top: 5.5%;  --m-slot1-left: 6%;
+        --m-slot2-w: 60%; --m-slot2-top: 10%;   --m-slot2-left: 20%;
+        --m-slot3-w: 45%; --m-slot3-top: 5.5%;  --m-slot3-left: 72%;
+        --m-slot4-w: 28%; --m-slot4-top: 38%;   --m-slot4-left: 14%;
+        --m-slot5-w: 30%; --m-slot5-top: 38%;   --m-slot5-left: 70%;
+        --m-ktm-btn-top: calc(var(--m-slot3-top) + 12%);
+        --m-ktm-btn-left: calc(var(--m-slot3-left) + 3%);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; background:#0b0b0b; }
+    a { text-decoration: none; }
+
+    .wrap { min-height: 100%; display: grid; place-items: center; padding: 2vmin; }
+
+    .scene { position: relative; width: var(--pc-width); aspect-ratio: 959 / 537; }
+    .scene img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    .scene.pc { display: block; }
+    .scene.mobile { display: none; }
+    @media (max-width: 800px) {
+      .scene { width: var(--m-width); aspect-ratio: 768 / 1365; }
+      .scene.pc { display: none; }
+      .scene.mobile { display: block; }
+    }
+
+    .layer { position: absolute; inset: 0; }
+    .overlay { pointer-events: none; }
+
+    .slot { position: absolute; }
+    .slot img { width: 100%; height: auto; display: block; }
+
+    .action-row { position: absolute; display: flex; gap: var(--pc-ktm-btn-gap); }
+    .btn { font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+           padding: .45rem .6rem; border-radius: .55rem; border: 2px solid rgba(0,0,0,.25);
+           background: rgba(255,255,255,.85); color: #111; box-shadow: 0 4px 10px rgba(0,0,0,.25);
+           backdrop-filter: blur(3px); }
+    .btn:hover { background: white; }
+
+    .pc .slot.s1 { width: var(--pc-slot1-w); top: var(--pc-slot1-top); left: var(--pc-slot1-left); }
+    .pc .slot.s2 { width: var(--pc-slot2-w); top: var(--pc-slot2-top); left: var(--pc-slot2-left); }
+    .pc .slot.s3 { width: var(--pc-slot3-w); top: var(--pc-slot3-top); left: var(--pc-slot3-left); }
+    .pc .slot.s4 { width: var(--pc-slot4-w); top: var(--pc-slot4-top); left: var(--pc-slot4-left); }
+    .pc .slot.s5 { width: var(--pc-slot5-w); top: var(--pc-slot5-top); left: var(--pc-slot5-left); }
+    .pc .action-row { top: var(--pc-ktm-btn-top); left: var(--pc-ktm-btn-left); }
+
+    .mobile .slot.s1 { width: var(--m-slot1-w); top: var(--m-slot1-top); left: var(--m-slot1-left); }
+    .mobile .slot.s2 { width: var(--m-slot2-w); top: var(--m-slot2-top); left: var(--m-slot2-left); }
+    .mobile .slot.s3 { width: var(--m-slot3-w); top: var(--m-slot3-top); left: var(--m-slot3-left); }
+    .mobile .slot.s4 { width: var(--m-slot4-w); top: var(--m-slot4-top); left: var(--m-slot4-left); }
+    .mobile .slot.s5 { width: var(--m-slot5-w); top: var(--m-slot5-top); left: var(--m-slot5-left); }
+    .mobile .action-row { top: var(--m-ktm-btn-top); left: var(--m-ktm-btn-left); }
+
+    .fade { animation: fade .6s ease both; }
+    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  </style>
 </head>
 <body>
-    <div class="background"></div>
-    <div class="overlay"></div>
+  <div class="wrap">
+
+    <!-- ============================= PC ============================== -->
+    <figure class="scene pc" aria-label="Desktop version">
+      <img class="layer fade" src="pc/bg.png" alt="Subway background (desktop)" />
+
+      <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
+        <img src="pc/fp.png" alt="FiradPatra banner" />
+      </a>
+      <a class="slot s2" href="#" aria-label="Manas post" title="Manas post">
+        <img src="pc/post.png" alt="Center banner" />
+      </a>
+
+      <div class="slot s3">
+        <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
+          <img src="pc/ktm.png" alt="Kathmandu banner" />
+        </a>
+        <div class="action-row">
+          <a class="btn" href="ktm.pdf" download>download</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">buy</a>
+        </div>
+      </div>
+
+      <a class="slot s4" href="#" aria-label="YouTube" title="YouTube">
+        <img src="pc/yt.png" alt="YouTube poster" />
+      </a>
+
+      <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
+        <img src="pc/px1rt.png" alt="Px1.rt poster" />
+      </a>
+
+      <img class="layer overlay fade" src="pc/overlay.png" alt="Scene overlay" />
+    </figure>
+
+
+    <!-- ============================ MOBILE =========================== -->
+    <figure class="scene mobile" aria-label="Mobile version">
+      <img class="layer fade" src="mobile/bg.png" alt="Subway background (mobile)" />
+
+      <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
+        <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
+      </a>
+      <a class="slot s2" href="#" aria-label="Manas post" title="Manas post">
+        <img src="mobile/post.png" alt="Center banner (mobile)" />
+      </a>
+
+      <div class="slot s3">
+        <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
+          <img src="mobile/ktm.png" alt="Kathmandu banner (mobile)" />
+        </a>
+        <div class="action-row">
+          <a class="btn" href="ktm.pdf" download>download</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">buy</a>
+        </div>
+      </div>
+
+      <a class="slot s4" href="#" aria-label="YouTube" title="YouTube">
+        <img src="mobile/yt.png" alt="YouTube poster (mobile)" />
+      </a>
+
+      <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
+        <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
+      </a>
+
+      <!-- Optional overlay for mobile -->
+      <!-- <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" /> -->
+    </figure>
+
+  </div>
 </body>
 </html>
