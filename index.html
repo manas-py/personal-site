@@ -30,16 +30,20 @@
         --m-ktm-btn-top: calc(var(--m-slot3-top) + 12%);
         --m-ktm-btn-left: calc(var(--m-slot3-left) + 3%);
       }
+      .scene { width: 100vw; height: 100vh; }
+      .scene.pc { display: none; }
+      .scene.mobile { display: block; }
+    }
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; background:#0b0b0b; }
     a { text-decoration: none; }
 
-    .wrap { min-height: 100%; display: grid; place-items: center; padding: 2vmin; }
+    .wrap { min-height: 100vh; height: 100vh; width: 100vw; margin: 0; padding: 0; }
 
-    .scene { position: relative; width: var(--pc-width); aspect-ratio: 959 / 537; }
-    .scene img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+    .scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
     .scene.pc { display: block; }
     .scene.mobile { display: none; }
@@ -50,9 +54,9 @@
     }
 
     .layer { position: absolute; inset: 0; }
-    .overlay { pointer-events: none; }
+    .overlay { pointer-events: none; z-index: 10; }
 
-    .slot { position: absolute; }
+    .slot { position: absolute; z-index: 3; }
     .slot img { width: 100%; height: auto; display: block; }
 
     .action-row { position: absolute; display: flex; gap: var(--pc-ktm-btn-gap); }
