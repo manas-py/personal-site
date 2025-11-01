@@ -31,7 +31,7 @@
         --m-ktm-btn-top: calc(var(--m-slot3-top) + 12%);
         --m-ktm-btn-left: calc(var(--m-slot3-left) + 3%);
       }
-      .scene { width: 100vw; height: 100vh; }
+      .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; overflow: hidden; }
       .scene.pc { display: none; }
       .scene.mobile { display: block; }
     }
@@ -44,7 +44,7 @@
     .wrap { min-height: 100vh; height: 100vh; width: 100vw; margin: 0; padding: 0; }
 
     .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; }
-    .scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .scene img { display: block; width: 100%; height: auto; }
 
     .scene.pc { display: block; }
     .scene.mobile { display: none; }
@@ -54,8 +54,8 @@
       .scene.mobile { display: block; }
     }
 
-    .layer { position: absolute; inset: 0; }
-    .overlay { pointer-events: none; z-index: 50; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
+    /* layers now handled with pseudo-elements */
+    /* overlay img rule no longer needed; using ::after */
 
     .slot { position: absolute; z-index: 3; }
     .slot img { width: 100%; height: auto; display: block; }
@@ -83,6 +83,14 @@
 
     .fade { animation: fade .6s ease both; }
     @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+      /* Background and overlay as true layers */
+    .scene::before, .scene::after { content:""; position:absolute; inset:0; background-position:center; background-size:cover; background-repeat:no-repeat; }
+    .pc::before { background-image: url('pc/bg.png'); }
+    .pc::after  { background-image: url('pc/overlay.png'); mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events:none; z-index: 50; }
+
+    .mobile::before { background-image: url('mobile/bg.png'); }
+    /* Uncomment and add mobile/overlay.png when ready */
+    /* .mobile::after  { background-image: url('mobile/overlay.png'); mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events:none; z-index: 50; } */
   </style>
 </head>
 <body>
@@ -90,8 +98,7 @@
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
-      <img class="layer fade" src="pc/bg.png" alt="Subway background (desktop)" />
-
+      <!-- pc background & overlay are applied via ::before/::after in CSS -->
       <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
       </a>
@@ -116,15 +123,12 @@
       <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="pc/px1rt.png" alt="Px1.rt poster" />
       </a>
-
-      <img class="layer overlay fade" src="pc/overlay.png" alt="Scene overlay" />
     </figure>
 
 
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
-      <img class="layer fade" src="mobile/bg.png" alt="Subway background (mobile)" />
-
+      <!-- mobile background & overlay can be applied via ::before/::after in CSS -->
       <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
       </a>
@@ -149,9 +153,6 @@
       <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
       </a>
-
-      <!-- Optional overlay for mobile -->
-      <!-- <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" /> -->
     </figure>
 
   </div>
