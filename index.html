@@ -6,83 +6,132 @@
   <title>Manas Bhandari • Personal Site</title>
   <style>
     :root {
-      --pc-width: min(1200px, 92vw);
-      --pc-ratio: 959 / 537;
-      --overlay-opacity: .45; /* tweak this to make overlay lighter/darker */
-      --pc-slot1-w: 42%; --pc-slot1-top: 5.5%;  --pc-slot1-left: 7%;
-      --pc-slot2-w: 31%; --pc-slot2-top: 7.5%;  --pc-slot2-left: 36.5%;
-      --pc-slot3-w: 24%; --pc-slot3-top: 7.5%;  --pc-slot3-left: 71.5%;
-      --pc-slot4-w: 14%; --pc-slot4-top: 35%;   --pc-slot4-left: 20.5%;
-      --pc-slot5-w: 15%; --pc-slot5-top: 34.5%; --pc-slot5-left: 70%;
+      --overlay-opacity: .45;
+
+      /* desktop billboard slots */
+      --pc-slot1-top: 4.583%;  --pc-slot1-left: 17.760%;  --pc-slot1-w: 20.964%;  --pc-slot1-h: 24.537%;
+      --pc-slot1-img-w: 477.019%;  --pc-slot1-img-x: 84.721%;  --pc-slot1-img-y: 18.679%;
+
+      --pc-slot2-top: 0%;      --pc-slot2-left: 0%;       --pc-slot2-w: 100%;    --pc-slot2-h: 100%;
+      --pc-slot2-img-w: 100%;    --pc-slot2-img-x: 0%;      --pc-slot2-img-y: 0%;
+
+      --pc-slot3-top: 12.870%;  --pc-slot3-left: 70.286%;  --pc-slot3-w: 15.807%; --pc-slot3-h: 20.231%;
+      --pc-slot3-img-w: 632.619%; --pc-slot3-img-x: 444.646%; --pc-slot3-img-y: 63.616%;
+
+      --pc-slot4-top: 27.083%;  --pc-slot4-left: 20.391%;  --pc-slot4-w: 9.974%;  --pc-slot4-h: 25.926%;
+      --pc-slot4-img-w: 1002.611%; --pc-slot4-img-x: 204.439%; --pc-slot4-img-y: 104.464%;
+
+      --pc-slot5-top: 27.593%;  --pc-slot5-left: 72.057%;  --pc-slot5-w: 12.161%; --pc-slot5-h: 24.537%;
+      --pc-slot5-img-w: 822.270%; --pc-slot5-img-x: 592.505%; --pc-slot5-img-y: 112.453%;
+
       --pc-ktm-btn-gap: 0.5rem;
-      --pc-ktm-btn-top: calc(var(--pc-slot3-top) + 10%);
-      --pc-ktm-btn-left: calc(var(--pc-slot3-left) + 2%);
+      --pc-ktm-btn-bottom: 6%;
     }
 
     @media (max-width: 800px) {
       :root {
-        --m-width: min(520px, 96vw);
-        --m-ratio: 768 / 1365;
-        --m-slot1-w: 50%; --m-slot1-top: 5.5%;  --m-slot1-left: 6%;
-        --m-slot2-w: 60%; --m-slot2-top: 10%;   --m-slot2-left: 20%;
-        --m-slot3-w: 45%; --m-slot3-top: 5.5%;  --m-slot3-left: 72%;
-        --m-slot4-w: 28%; --m-slot4-top: 38%;   --m-slot4-left: 14%;
-        --m-slot5-w: 30%; --m-slot5-top: 38%;   --m-slot5-left: 70%;
-        --m-ktm-btn-top: calc(var(--m-slot3-top) + 12%);
-        --m-ktm-btn-left: calc(var(--m-slot3-left) + 3%);
+        --m-slot1-top: 26.510%; --m-slot1-left: 0%;      --m-slot1-w: 27.731%; --m-slot1-h: 11.302%;
+        --m-slot1-img-w: 360.601%; --m-slot1-img-x: 0%;      --m-slot1-img-y: 234.562%;
+
+        --m-slot2-top: 23.958%; --m-slot2-left: 25.278%; --m-slot2-w: 56.389%; --m-slot2-h: 10.677%;
+        --m-slot2-img-w: 177.340%; --m-slot2-img-x: 44.828%; --m-slot2-img-y: 224.390%;
+
+        --m-slot3-top: 30.547%; --m-slot3-left: 76.111%; --m-slot3-w: 23.889%; --m-slot3-h: 9.818%;
+        --m-slot3-img-w: 418.605%; --m-slot3-img-x: 318.605%; --m-slot3-img-y: 311.141%;
+
+        --m-slot4-top: 37.448%; --m-slot4-left: 0%;      --m-slot4-w: 14.907%; --m-slot4-h: 12.578%;
+        --m-slot4-img-w: 670.807%; --m-slot4-img-x: 0%;      --m-slot4-img-y: 297.723%;
+
+        --m-slot5-top: 37.682%; --m-slot5-left: 78.843%; --m-slot5-w: 18.611%; --m-slot5-h: 11.901%;
+        --m-slot5-img-w: 537.313%; --m-slot5-img-x: 423.632%; --m-slot5-img-y: 316.630%;
+
+        --m-ktm-btn-gap: 0.4rem;
+        --m-ktm-btn-bottom: 8%;
       }
-      .scene { width: 100vw; height: 100vh; }
-      .scene.pc { display: none; }
-      .scene.mobile { display: block; }
-    }
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; background:#0b0b0b; }
+    html, body { height: 100%; margin: 0; background: #0b0b0b; }
     a { text-decoration: none; }
+    figure { margin: 0; }
 
-    .wrap { min-height: 100vh; height: 100vh; width: 100vw; margin: 0; padding: 0; }
+    .wrap { position: relative; min-height: 100vh; width: 100vw; height: 100vh; margin: 0; padding: 0; }
 
-    .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+    .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; margin: 0; overflow: hidden; }
     .scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
     .scene.pc { display: block; }
     .scene.mobile { display: none; }
+
     @media (max-width: 800px) {
-      .scene { width: var(--m-width); aspect-ratio: 768 / 1365; }
       .scene.pc { display: none; }
       .scene.mobile { display: block; }
     }
 
     .layer { position: absolute; inset: 0; }
-    .overlay { pointer-events: none; z-index: 50; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
+    .layer.base { z-index: 1; }
+    .overlay { pointer-events: none; z-index: 2; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
 
-    .slot { position: absolute; z-index: 3; }
-    .slot img { width: 100%; height: auto; display: block; }
+    .slot { position: absolute; display: block; overflow: hidden; z-index: 5; }
+    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
+    .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
 
-    .action-row { position: absolute; display: flex; gap: var(--pc-ktm-btn-gap); }
-    .btn { font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-           padding: .45rem .6rem; border-radius: .55rem; border: 2px solid rgba(0,0,0,.25);
-           background: rgba(255,255,255,.85); color: #111; box-shadow: 0 4px 10px rgba(0,0,0,.25);
-           backdrop-filter: blur(3px); }
+    .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
+    .pc .slot.s1 img { width: var(--pc-slot1-img-w); top: calc(-1 * var(--pc-slot1-img-y)); left: calc(-1 * var(--pc-slot1-img-x)); }
+
+    .pc .slot.s2 { top: var(--pc-slot2-top); left: var(--pc-slot2-left); width: var(--pc-slot2-w); height: var(--pc-slot2-h); }
+    .pc .slot.s2 img { width: var(--pc-slot2-img-w); top: calc(-1 * var(--pc-slot2-img-y)); left: calc(-1 * var(--pc-slot2-img-x)); }
+
+    .pc .slot.s3 { top: var(--pc-slot3-top); left: var(--pc-slot3-left); width: var(--pc-slot3-w); height: var(--pc-slot3-h); }
+    .pc .slot.s3 img { width: var(--pc-slot3-img-w); top: calc(-1 * var(--pc-slot3-img-y)); left: calc(-1 * var(--pc-slot3-img-x)); }
+
+    .pc .slot.s4 { top: var(--pc-slot4-top); left: var(--pc-slot4-left); width: var(--pc-slot4-w); height: var(--pc-slot4-h); }
+    .pc .slot.s4 img { width: var(--pc-slot4-img-w); top: calc(-1 * var(--pc-slot4-img-y)); left: calc(-1 * var(--pc-slot4-img-x)); }
+
+    .pc .slot.s5 { top: var(--pc-slot5-top); left: var(--pc-slot5-left); width: var(--pc-slot5-w); height: var(--pc-slot5-h); }
+    .pc .slot.s5 img { width: var(--pc-slot5-img-w); top: calc(-1 * var(--pc-slot5-img-y)); left: calc(-1 * var(--pc-slot5-img-x)); }
+
+    .mobile .slot.s1 { top: var(--m-slot1-top); left: var(--m-slot1-left); width: var(--m-slot1-w); height: var(--m-slot1-h); }
+    .mobile .slot.s1 img { width: var(--m-slot1-img-w); top: calc(-1 * var(--m-slot1-img-y)); left: calc(-1 * var(--m-slot1-img-x)); }
+
+    .mobile .slot.s2 { top: var(--m-slot2-top); left: var(--m-slot2-left); width: var(--m-slot2-w); height: var(--m-slot2-h); }
+    .mobile .slot.s2 img { width: var(--m-slot2-img-w); top: calc(-1 * var(--m-slot2-img-y)); left: calc(-1 * var(--m-slot2-img-x)); }
+
+    .mobile .slot.s3 { top: var(--m-slot3-top); left: var(--m-slot3-left); width: var(--m-slot3-w); height: var(--m-slot3-h); }
+    .mobile .slot.s3 img { width: var(--m-slot3-img-w); top: calc(-1 * var(--m-slot3-img-y)); left: calc(-1 * var(--m-slot3-img-x)); }
+
+    .mobile .slot.s4 { top: var(--m-slot4-top); left: var(--m-slot4-left); width: var(--m-slot4-w); height: var(--m-slot4-h); }
+    .mobile .slot.s4 img { width: var(--m-slot4-img-w); top: calc(-1 * var(--m-slot4-img-y)); left: calc(-1 * var(--m-slot4-img-x)); }
+
+    .mobile .slot.s5 { top: var(--m-slot5-top); left: var(--m-slot5-left); width: var(--m-slot5-w); height: var(--m-slot5-h); }
+    .mobile .slot.s5 img { width: var(--m-slot5-img-w); top: calc(-1 * var(--m-slot5-img-y)); left: calc(-1 * var(--m-slot5-img-x)); }
+
+    .slot .action-row {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      z-index: 6;
+    }
+
+    .pc .slot.s3 .action-row { bottom: var(--pc-ktm-btn-bottom); gap: var(--pc-ktm-btn-gap); }
+    .mobile .slot.s3 .action-row { bottom: var(--m-ktm-btn-bottom); gap: var(--m-ktm-btn-gap); }
+
+    .btn {
+      font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      padding: .45rem .6rem;
+      border-radius: .55rem;
+      border: 2px solid rgba(0,0,0,.25);
+      background: rgba(255,255,255,.85);
+      color: #111;
+      box-shadow: 0 4px 10px rgba(0,0,0,.25);
+      backdrop-filter: blur(3px);
+      transition: background .15s ease;
+    }
     .btn:hover { background: white; }
 
-    .pc .slot.s1 { width: var(--pc-slot1-w); top: var(--pc-slot1-top); left: var(--pc-slot1-left); }
-    .pc .slot.s2 { width: var(--pc-slot2-w); top: var(--pc-slot2-top); left: var(--pc-slot2-left); }
-    .pc .slot.s3 { width: var(--pc-slot3-w); top: var(--pc-slot3-top); left: var(--pc-slot3-left); }
-    .pc .slot.s4 { width: var(--pc-slot4-w); top: var(--pc-slot4-top); left: var(--pc-slot4-left); }
-    .pc .slot.s5 { width: var(--pc-slot5-w); top: var(--pc-slot5-top); left: var(--pc-slot5-left); }
-    .pc .action-row { top: var(--pc-ktm-btn-top); left: var(--pc-ktm-btn-left); }
-
-    .mobile .slot.s1 { width: var(--m-slot1-w); top: var(--m-slot1-top); left: var(--m-slot1-left); }
-    .mobile .slot.s2 { width: var(--m-slot2-w); top: var(--m-slot2-top); left: var(--m-slot2-left); }
-    .mobile .slot.s3 { width: var(--m-slot3-w); top: var(--m-slot3-top); left: var(--m-slot3-left); }
-    .mobile .slot.s4 { width: var(--m-slot4-w); top: var(--m-slot4-top); left: var(--m-slot4-left); }
-    .mobile .slot.s5 { width: var(--m-slot5-w); top: var(--m-slot5-top); left: var(--m-slot5-left); }
-    .mobile .action-row { top: var(--m-ktm-btn-top); left: var(--m-ktm-btn-left); }
-
     .fade { animation: fade .6s ease both; }
-    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -90,7 +139,7 @@
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
-      <img class="layer fade" src="pc/bg.png" alt="Subway background (desktop)" />
+      <img class="layer base fade" src="pc/bg.png" alt="Subway background (desktop)" />
 
       <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
@@ -123,7 +172,7 @@
 
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
-      <img class="layer fade" src="mobile/bg.png" alt="Subway background (mobile)" />
+      <img class="layer base fade" src="mobile/bg.png" alt="Subway background (mobile)" />
 
       <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
@@ -150,8 +199,7 @@
         <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
       </a>
 
-      <!-- Optional overlay for mobile -->
-      <!-- <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" /> -->
+      <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" />
     </figure>
 
   </div>
