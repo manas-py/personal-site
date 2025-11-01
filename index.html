@@ -58,17 +58,11 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
+      background: #0b0b0b;
       isolation: isolate;
-      background-color: #0b0b0b;
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-image: var(--scene-overlay), var(--scene-bg);
-      background-blend-mode: overlay, normal;
-      animation: fade .6s ease both;
     }
 
-    .scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .scene img { display: block; }
 
     .scene.pc { display: block; }
     .scene.mobile { display: none; }
@@ -78,11 +72,10 @@
       .scene.mobile { display: block; }
     }
 
-    .scene.pc { --scene-bg: url('pc/bg.png'); --scene-overlay: url('pc/overlay.png'); }
-    .scene.mobile { --scene-bg: url('mobile/bg.png'); --scene-overlay: url('mobile/overlay.png'); }
+    .layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 1; }
+    .layer.overlay { z-index: 2; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events: none; }
 
     .slot { position: absolute; display: block; overflow: hidden; z-index: 3; }
-    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
     .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
 
     .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
@@ -135,6 +128,9 @@
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
+      <img class="layer base fade" src="pc/bg.png" alt="Subway background (desktop)" />
+      <img class="layer overlay fade" src="pc/overlay.png" alt="Scene overlay (desktop)" />
+
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
       </a>
@@ -160,6 +156,9 @@
 
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
+      <img class="layer base fade" src="mobile/bg.png" alt="Subway background (mobile)" />
+      <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" />
+
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
       </a>
