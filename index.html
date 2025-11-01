@@ -62,11 +62,36 @@
       .scene.mobile { display: block; }
     }
 
-    .layer { position: absolute; inset: 0; }
-    .layer.base { z-index: 1; }
-    .overlay { pointer-events: none; z-index: 2; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
+    .scene::before,
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
 
-    .slot { position: absolute; display: block; overflow: hidden; z-index: 5; }
+    .scene::before {
+      z-index: 1;
+      animation: fade .6s ease both;
+    }
+
+    .scene::after {
+      z-index: 2;
+      mix-blend-mode: overlay;
+      opacity: var(--overlay-opacity, .45);
+      animation: fade .6s ease both;
+    }
+
+    .scene.pc::before { background-image: url('pc/bg.png'); }
+    .scene.pc::after  { background-image: url('pc/overlay.png'); }
+    .scene.mobile::before { background-image: url('mobile/bg.png'); }
+    .scene.mobile::after  { background-image: url('mobile/overlay.png'); }
+
+    .slot { position: absolute; display: block; overflow: hidden; z-index: 3; }
+    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
     .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
 
     .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
@@ -119,8 +144,6 @@
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
-      <img class="layer base fade" src="pc/bg.png" alt="Subway background (desktop)" />
-
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
       </a>
@@ -141,15 +164,11 @@
       <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="pc/px1rt.png" alt="Px1.rt poster" />
       </a>
-
-      <img class="layer overlay fade" src="pc/overlay.png" alt="Scene overlay" />
     </figure>
 
 
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
-      <img class="layer base fade" src="mobile/bg.png" alt="Subway background (mobile)" />
-
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
       </a>
@@ -170,8 +189,6 @@
       <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
       </a>
-
-      <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" />
     </figure>
 
   </div>
