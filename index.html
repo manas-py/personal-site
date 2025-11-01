@@ -6,8 +6,6 @@
   <title>Manas Bhandari ? Personal Site</title>
   <style>
     :root {
-      --overlay-opacity: .45;
-
       /* desktop billboard slots */
       --pc-slot1-top: 4.583%;  --pc-slot1-left: 17.760%;  --pc-slot1-w: 20.964%;  --pc-slot1-h: 24.537%;
       --pc-slot1-img-w: 477.019%;  --pc-slot1-img-x: 84.721%;  --pc-slot1-img-y: 18.679%;
@@ -72,10 +70,19 @@
       .scene.mobile { display: block; }
     }
 
-    .layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 1; }
-    .layer.overlay { z-index: 2; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events: none; }
+    .scene-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 1;
+      pointer-events: none;
+    }
 
     .slot { position: absolute; display: block; overflow: hidden; z-index: 3; }
+    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
     .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
 
     .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
@@ -128,8 +135,7 @@
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
-      <img class="layer base fade" src="pc/bg.png" alt="Subway background (desktop)" />
-      <img class="layer overlay fade" src="pc/overlay.png" alt="Scene overlay (desktop)" />
+      <img class="scene-bg fade" src="pc/background.png" alt="Subway background (desktop)" />
 
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
@@ -156,8 +162,7 @@
 
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
-      <img class="layer base fade" src="mobile/bg.png" alt="Subway background (mobile)" />
-      <img class="layer overlay fade" src="mobile/overlay.png" alt="Scene overlay (mobile)" />
+      <img class="scene-bg fade" src="mobile/background.png" alt="Subway background (mobile)" />
 
       <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
