@@ -23,9 +23,6 @@
 
       --pc-slot5-top: 27.593%;  --pc-slot5-left: 72.057%;  --pc-slot5-w: 12.161%; --pc-slot5-h: 24.537%;
       --pc-slot5-img-w: 822.270%; --pc-slot5-img-x: 592.505%; --pc-slot5-img-y: 112.453%;
-
-      --pc-ktm-btn-gap: 0.5rem;
-      --pc-ktm-btn-bottom: 6%;
     }
 
     @media (max-width: 800px) {
@@ -44,9 +41,6 @@
 
         --m-slot5-top: 37.682%; --m-slot5-left: 78.843%; --m-slot5-w: 18.611%; --m-slot5-h: 11.901%;
         --m-slot5-img-w: 537.313%; --m-slot5-img-x: 423.632%; --m-slot5-img-y: 316.630%;
-
-        --m-ktm-btn-gap: 0.4rem;
-        --m-ktm-btn-bottom: 8%;
       }
     }
 
@@ -57,7 +51,7 @@
 
     .wrap { position: relative; min-height: 100vh; width: 100vw; height: 100vh; margin: 0; padding: 0; }
 
-    .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; margin: 0; overflow: hidden; }
+    .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; margin: 0; overflow: hidden; isolation: isolate; }
     .scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
     .scene.pc { display: block; }
@@ -73,7 +67,6 @@
     .overlay { pointer-events: none; z-index: 2; mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); }
 
     .slot { position: absolute; display: block; overflow: hidden; z-index: 5; }
-    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
     .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
 
     .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
@@ -105,30 +98,6 @@
 
     .mobile .slot.s5 { top: var(--m-slot5-top); left: var(--m-slot5-left); width: var(--m-slot5-w); height: var(--m-slot5-h); }
     .mobile .slot.s5 img { width: var(--m-slot5-img-w); top: calc(-1 * var(--m-slot5-img-y)); left: calc(-1 * var(--m-slot5-img-x)); }
-
-    .slot .action-row {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      z-index: 6;
-    }
-
-    .pc .slot.s3 .action-row { bottom: var(--pc-ktm-btn-bottom); gap: var(--pc-ktm-btn-gap); }
-    .mobile .slot.s3 .action-row { bottom: var(--m-ktm-btn-bottom); gap: var(--m-ktm-btn-gap); }
-
-    .btn {
-      font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      padding: .45rem .6rem;
-      border-radius: .55rem;
-      border: 2px solid rgba(0,0,0,.25);
-      background: rgba(255,255,255,.85);
-      color: #111;
-      box-shadow: 0 4px 10px rgba(0,0,0,.25);
-      backdrop-filter: blur(3px);
-      transition: background .15s ease;
-    }
-    .btn:hover { background: white; }
 
     .fade { animation: fade .6s ease both; }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -163,10 +132,6 @@
         <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
           <img src="pc/ktm.png" alt="Kathmandu banner" />
         </a>
-        <div class="action-row">
-          <a class="btn" href="ktm.pdf" download>download</a>
-          <a class="btn" href="#" target="_blank" rel="noopener">buy</a>
-        </div>
       </div>
 
       <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
@@ -196,10 +161,6 @@
         <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
           <img src="mobile/ktm.png" alt="Kathmandu banner (mobile)" />
         </a>
-        <div class="action-row">
-          <a class="btn" href="ktm.pdf" download>download</a>
-          <a class="btn" href="#" target="_blank" rel="noopener">buy</a>
-        </div>
       </div>
 
       <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
