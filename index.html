@@ -8,7 +8,7 @@
     :root {
       --pc-width: min(1200px, 92vw);
       --pc-ratio: 959 / 537;
-      --overlay-opacity: .45; /* tweak this to make overlay lighter/darker */
+      --overlay-opacity: .25; /* tweak this to make overlay lighter/darker */
       --pc-slot1-w: 42%; --pc-slot1-top: 5.5%;  --pc-slot1-left: 7%;
       --pc-slot2-w: 31%; --pc-slot2-top: 7.5%;  --pc-slot2-left: 36.5%;
       --pc-slot3-w: 24%; --pc-slot3-top: 7.5%;  --pc-slot3-left: 71.5%;
@@ -35,6 +35,8 @@
       .scene.pc { display: none; }
       .scene.mobile { display: block; }
     }
+
+
     }
 
     * { box-sizing: border-box; }
@@ -44,7 +46,7 @@
     .wrap { min-height: 100vh; height: 100vh; width: 100vw; margin: 0; padding: 0; }
 
     .scene { position: fixed; inset: 0; width: 100vw; height: 100vh; }
-    .scene img { display: block; width: 100%; height: auto; }
+    .scene img { display: block; }
 
     .scene.pc { display: block; }
     .scene.mobile { display: none; }
@@ -86,27 +88,44 @@
       /* Background and overlay as true layers */
     .scene::before, .scene::after { content:""; position:absolute; inset:0; background-position:center; background-size:cover; background-repeat:no-repeat; }
     .pc::before { background-image: url('pc/bg.png'); }
-    .pc::after  { background-image: url('pc/overlay.png'); mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events:none; z-index: 50; }
+    .pc::after  { background-image: url('pc/overlay.png'); mix-blend-mode: soft-light; opacity: var(--overlay-opacity, .25); pointer-events:none; z-index: 50; }
 
     .mobile::before { background-image: url('mobile/bg.png'); }
     /* Uncomment and add mobile/overlay.png when ready */
     /* .mobile::after  { background-image: url('mobile/overlay.png'); mix-blend-mode: overlay; opacity: var(--overlay-opacity, .45); pointer-events:none; z-index: 50; } */
+      /* Background and overlay as true layers */
+    .scene::before, .scene::after { content:""; position:absolute; inset:0; background-position:center; background-size:cover; background-repeat:no-repeat; }
+    .pc::before { background-image: url('pc/bg.png'); }
+    .pc::after  { background-image: url('pc/overlay.png'); mix-blend-mode: soft-light; opacity: var(--overlay-opacity, .25); pointer-events:none; z-index: 50; }
+
+    .mobile::before { background-image: url('mobile/bg.png'); }
+    /* .mobile::after  { background-image: url('mobile/overlay.png'); mix-blend-mode: soft-light; opacity: var(--overlay-opacity, .25); pointer-events:none; z-index: 50; } */
+
+    /* Debug overlay to align stickers quickly (press "d") */
+    .debug .slot { outline: 2px dashed rgba(0,255,0,.6); }
+    .debug .slot::after { content: attr(data-slot); position:absolute; top:-1.2rem; left:0; padding:.2rem .4rem; font: 700 12px/1 system-ui; background: rgba(0,0,0,.6); color:#0f0; border-radius:.25rem; }
   </style>
 </head>
 <body>
+  <script>
+    // Press 'd' to toggle debug outlines for alignment help
+    document.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase()==='d') document.body.classList.toggle('debug');
+    });
+  </script>
   <div class="wrap">
 
     <!-- ============================= PC ============================== -->
     <figure class="scene pc" aria-label="Desktop version">
       <!-- pc background & overlay are applied via ::before/::after in CSS -->
-      <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
+      <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="pc/fp.png" alt="FiradPatra banner" />
       </a>
-      <a class="slot s2" href="#" aria-label="Manas post" title="Manas post">
+      <a class="slot s2" data-slot="2" href="#" aria-label="Manas post" title="Manas post">
         <img src="pc/post.png" alt="Center banner" />
       </a>
 
-      <div class="slot s3">
+      <div class="slot s3" data-slot="3">
         <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
           <img src="pc/ktm.png" alt="Kathmandu banner" />
         </a>
@@ -116,11 +135,11 @@
         </div>
       </div>
 
-      <a class="slot s4" href="#" aria-label="YouTube" title="YouTube">
+      <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
         <img src="pc/yt.png" alt="YouTube poster" />
       </a>
 
-      <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
+      <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="pc/px1rt.png" alt="Px1.rt poster" />
       </a>
     </figure>
@@ -129,14 +148,14 @@
     <!-- ============================ MOBILE =========================== -->
     <figure class="scene mobile" aria-label="Mobile version">
       <!-- mobile background & overlay can be applied via ::before/::after in CSS -->
-      <a class="slot s1" href="#" aria-label="FiradPatra" title="FiradPatra">
+      <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
         <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
       </a>
-      <a class="slot s2" href="#" aria-label="Manas post" title="Manas post">
+      <a class="slot s2" data-slot="2" href="#" aria-label="Manas post" title="Manas post">
         <img src="mobile/post.png" alt="Center banner (mobile)" />
       </a>
 
-      <div class="slot s3">
+      <div class="slot s3" data-slot="3">
         <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
           <img src="mobile/ktm.png" alt="Kathmandu banner (mobile)" />
         </a>
@@ -146,11 +165,11 @@
         </div>
       </div>
 
-      <a class="slot s4" href="#" aria-label="YouTube" title="YouTube">
+      <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
         <img src="mobile/yt.png" alt="YouTube poster (mobile)" />
       </a>
 
-      <a class="slot s5" href="#" aria-label="Px1.rt" title="Px1.rt">
+      <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
         <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
       </a>
     </figure>
