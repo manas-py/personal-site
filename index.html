@@ -4,11 +4,19 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Personal Site — Layered Scene with Clickable Stickers</title>
+
+<!-- Force all relative paths to resolve from THIS file's folder -->
+<base href="./">
+
+<!-- Preload key images to avoid races / caching quirks -->
+<link rel="preload" as="image" href="./pc/bg.png">
+<link rel="preload" as="image" href="./pc/overlay.png">
+<link rel="preload" as="image" href="./mobile/bg.png">
+
 <style>
   :root{
-    /* Tweak freely */
-    --overlay-opacity:.25;
-    --overlay-blend:soft-light; /* try: overlay, multiply, screen */
+    --overlay-opacity:.25;          /* overlay visibility */
+    --overlay-blend:soft-light;     /* overlay, multiply, screen, etc. */
   }
 
   /* Reset & base */
@@ -16,25 +24,26 @@
   html,body{height:100%}
   body{
     margin:0;
-    background:#000; /* never shows once bg covers, prevents flashes */
+    background:#000;                /* in case bg image hasn't loaded yet */
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-    overflow:hidden; /* full-bleed canvas */
+    overflow:hidden;                 /* full-bleed canvas */
   }
 
-  /* Screen-reader only */
+  /* Screen-reader only text */
   .sr-only{
     position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;
   }
 
-  /* Scene root */
+  /* Scene root (fills viewport) */
   .scene{
     position:relative;
     width:100vw;height:100vh;min-height:100dvh;
     overflow:hidden;
-    isolation:isolate; /* keep blend effects local */
+    isolation:isolate;               /* keep blend effects local */
+    z-index:0;
   }
 
-  /* TRUE LAYERS (bg/overlay as pseudo elements) */
+  /* TRUE LAYERS (use pseudo-elements; no <img> for bg/overlay) */
   .scene::before,
   .scene::after{
     content:"";
@@ -44,23 +53,23 @@
     background-repeat:no-repeat;
   }
 
-  /* Layer order: bg (0) < stickers (1) < overlay (2)  */
-  .scene::before{ z-index:0; }                 /* BACKGROUND */
+  /* z-order: bg (0) < stickers (1) < overlay (2) */
+  .scene::before{ z-index:0; }       /* BACKGROUND */
   .scene::after{
-    z-index:2;                                  /* OVERLAY */
+    z-index:2;                       /* OVERLAY (tints but doesn't block clicks) */
     mix-blend-mode:var(--overlay-blend);
     opacity:var(--overlay-opacity);
-    pointer-events:none;                        /* clicks pass through */
+    pointer-events:none;
   }
 
-  /* Bind images to proper scenes */
-  .pc::before{ background-image:url('pc/bg.png'); }
-  .pc::after { background-image:url('pc/overlay.png'); }
+  /* Bind images to scenes (NOTICE the ./ prefix for safety on subpaths) */
+  .pc::before{ background-image:url('./pc/bg.png'); }
+  .pc::after { background-image:url('./pc/overlay.png'); }
 
-  .mobile::before{ background-image:url('mobile/bg.png'); }
-  .mobile::after { background-image:url('mobile/overlay.png'); } /* ok if file missing */
+  .mobile::before{ background-image:url('./mobile/bg.png'); }
+  .mobile::after { background-image:url('./mobile/overlay.png'); } /* ok if file missing */
 
-  /* Desktop default; swap at <=800px */
+  /* Desktop by default; switch to mobile under 800px */
   .pc{display:block}
   .mobile{display:none}
   @media (max-width:800px){
@@ -71,7 +80,7 @@
   /* Clickable sticker slots */
   .slot{
     position:absolute;
-    z-index:1; /* between bg (0) and overlay (2) */
+    z-index:1;                       /* between bg (0) and overlay (2) */
     width:var(--w);
     left:var(--l);
     top:var(--t);
@@ -79,7 +88,7 @@
   .sticker{display:block;width:100%;text-decoration:none;outline:none;}
   .sticker img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.25));}
 
-  /* KTM tiny buttons */
+  /* KTM buttons */
   .btn{
     position:absolute;
     display:inline-block;
@@ -103,8 +112,123 @@
   .pc .slot-4{ --w:14%;   --t:35%;   --l:20.5%; }
   .pc .slot-5{ --w:15%;   --t:34.5%; --l:70%;   }
 
-  /* ---------- Mobile defaults (adjust later as needed) ---------- */
+  /* ---------- Mobile defaults (tweak later) ---------- */
   .mobile .slot-1{ --w:70%;  --t:6%;   --l:6%;  }
   .mobile .slot-2{ --w:58%;  --t:14%;  --l:20%; }
   .mobile .slot-3{ --w:50%;  --t:8%;   --l:46%; }
-  .m
+  .mobile .slot-4{ --w:28%;  --t:54%;  --l:8%;  }
+  .mobile .slot-5{ --w:30%;  --t:55%;  --l:62%; }
+
+  /* Debug (press "d") */
+  body.debug .slot{outline:2px dashed rgba(255,255,255,.8)}
+  body.debug .slot::after{
+    content:attr(data-slot);
+    position:absolute;top:-.9rem;left:-.9rem;
+    background:#ff2;color:#111;border-radius:6px;padding:.25rem .35rem;
+    font:600 12px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    box-shadow:0 2px 6px rgba(0,0,0,.3);
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== DESKTOP ===================== -->
+<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers">
+  <!-- #1 -->
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="Open FiradPatra">
+      <span class="sr-only">FiradPatra</span>
+      <img src="./pc/fp.png" alt="FiradPatra sticker">
+    </a>
+  </div>
+
+  <!-- #2 -->
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Open blog post">
+      <span class="sr-only">Blog Post</span>
+      <img src="./pc/post.png" alt="Poster sticker">
+    </a>
+  </div>
+
+  <!-- #3 + buttons -->
+  <div class="slot slot-3" data-slot="#3" aria-live="polite">
+    <a class="sticker" href="#" aria-label="Open Kathmandu poster">
+      <span class="sr-only">Kathmandu Poster</span>
+      <img src="./pc/ktm.png" alt="Kathmandu poster sticker">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
+    <a class="btn dl"  href="./ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+  </div>
+
+  <!-- #4 -->
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="Open YouTube">
+      <span class="sr-only">YouTube</span>
+      <img src="./pc/yt.png" alt="YouTube sticker">
+    </a>
+  </div>
+
+  <!-- #5 -->
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Open px1rt">
+      <span class="sr-only">px1rt</span>
+      <img src="./pc/px1rt.png" alt="px1rt sticker">
+    </a>
+  </div>
+</section>
+
+<!-- ===================== MOBILE ===================== -->
+<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers">
+  <!-- #1 -->
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="Open FiradPatra">
+      <span class="sr-only">FiradPatra</span>
+      <img src="./mobile/fp.png" alt="FiradPatra sticker">
+    </a>
+  </div>
+
+  <!-- #2 -->
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Open blog post">
+      <span class="sr-only">Blog Post</span>
+      <img src="./mobile/post.png" alt="Poster sticker">
+    </a>
+  </div>
+
+  <!-- #3 + buttons -->
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Open Kathmandu poster">
+      <span class="sr-only">Kathmandu Poster</span>
+      <img src="./mobile/ktm.png" alt="Kathmandu poster sticker">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
+    <a class="btn dl"  href="./ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+  </div>
+
+  <!-- #4 -->
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="Open YouTube">
+      <span class="sr-only">YouTube</span>
+      <img src="./mobile/yt.png" alt="YouTube sticker">
+    </a>
+  </div>
+
+  <!-- #5 -->
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Open px1rt">
+      <span class="sr-only">px1rt</span>
+      <img src="./mobile/px1rt.png" alt="px1rt sticker">
+    </a>
+  </div>
+</section>
+
+<script>
+  // Debug toggle: press "d" to outline slots & show numbers
+  (function(){
+    addEventListener('keydown', e=>{
+      if(e.key.toLowerCase()==='d'){ document.body.classList.toggle('debug'); }
+    }, {passive:true});
+  }());
+</script>
+</body>
+</html>
