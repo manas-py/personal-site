@@ -6,14 +6,8 @@
 <title>Personal Site — Layered Scene with Clickable Stickers</title>
 <style>
   :root{
-    /* You can tweak these safely */
-    --overlay-opacity:.25;                 /* 0 → 1 */
-    --overlay-blend:soft-light;            /* overlay | multiply | screen */
-    /* Fallbacks (JS will override with the same URLs if they load) */
-    --pc-bg:url('pc/bg.png');
-    --pc-ov:url('pc/overlay.png');
-    --m-bg:url('mobile/bg.png');
-    --m-ov:url('mobile/overlay.png');
+    --overlay-opacity:.25;          /* adjust to taste */
+    --overlay-blend:soft-light;     /* overlay | multiply | screen */
   }
 
   /* Reset & base */
@@ -21,25 +15,25 @@
   html,body{height:100%}
   body{
     margin:0;
-    background:#000;                       /* never shows if bg appears */
+    background:#000;                /* avoids flashes while images load */
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-    overflow:hidden;                        /* full-bleed canvas */
+    overflow:hidden;                /* full-bleed 100vh canvas */
   }
 
-  /* Screen-reader only text */
+  /* Screen-reader only utility */
   .sr-only{
     position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;
   }
 
-  /* Scene root (fills the viewport) */
+  /* Scene root */
   .scene{
     position:relative;
     width:100vw;height:100vh;min-height:100dvh;
     overflow:hidden;
-    isolation:isolate;                      /* keep blends local */
+    isolation:isolate;              /* keep mix-blend effects local */
   }
 
-  /* TRUE LAYERS (bg & overlay as pseudo-elements) */
+  /* TRUE layers: bg + overlay as pseudo-elements */
   .scene::before,
   .scene::after{
     content:"";
@@ -48,25 +42,24 @@
     background-position:center;
     background-repeat:no-repeat;
   }
-  /* z-order: bg (0) < stickers (1) < overlay (2) */
-  .scene::before{ z-index:0; }              /* BACKGROUND */
+
+  /* Z-order contract: bg (0) < stickers (1) < overlay (2) */
+  .scene::before{ z-index:0; }      /* BACKGROUND */
   .scene::after{
-    z-index:2;                              /* OVERLAY */
+    z-index:2;                      /* OVERLAY (tints; doesn’t block clicks) */
     mix-blend-mode:var(--overlay-blend);
     opacity:var(--overlay-opacity);
     pointer-events:none;
   }
 
-  /* Bind images via CSS variables so JS can safely swap/disable them */
-  .pc::before{ background-image:var(--pc-bg); }
-  .pc::after { background-image:var(--pc-ov); }
-  .pc[data-has-overlay="false"]::after{ display:none; }
+  /* Bind images — use ABSOLUTE-ROOT paths to be robust on custom domains */
+  .pc::before{ background-image:url('/pc/bg.png'); }
+  .pc::after { background-image:url('/pc/overlay.png'); }
 
-  .mobile::before{ background-image:var(--m-bg); }
-  .mobile::after { background-image:var(--m-ov); }
-  .mobile[data-has-overlay="false"]::after{ display:none; }
+  .mobile::before{ background-image:url('/mobile/bg.png'); }
+  .mobile::after { background-image:url('/mobile/overlay.png'); } /* ok if file absent */
 
-  /* Desktop by default; switch to mobile under 800px */
+  /* Responsive switch */
   .pc{display:block}
   .mobile{display:none}
   @media (max-width:800px){
@@ -74,10 +67,10 @@
     .mobile{display:block}
   }
 
-  /* Clickable sticker slots */
+  /* Sticker slots */
   .slot{
     position:absolute;
-    z-index:1;                               /* between bg (0) and overlay (2) */
+    z-index:1;                       /* between bg (0) and overlay (2) */
     width:var(--w);
     left:var(--l);
     top:var(--t);
@@ -85,7 +78,7 @@
   .sticker{display:block;width:100%;text-decoration:none;outline:none;}
   .sticker img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.25));}
 
-  /* KTM buttons */
+  /* KTM small rounded buttons */
   .btn{
     position:absolute;
     display:inline-block;
@@ -109,14 +102,14 @@
   .pc .slot-4{ --w:14%;   --t:35%;   --l:20.5%; }
   .pc .slot-5{ --w:15%;   --t:34.5%; --l:70%;   }
 
-  /* ---------- Mobile defaults (adjust later) ---------- */
+  /* ---------- Mobile defaults (tweak later) ---------- */
   .mobile .slot-1{ --w:70%;  --t:6%;   --l:6%;  }
   .mobile .slot-2{ --w:58%;  --t:14%;  --l:20%; }
   .mobile .slot-3{ --w:50%;  --t:8%;   --l:46%; }
   .mobile .slot-4{ --w:28%;  --t:54%;  --l:8%;  }
   .mobile .slot-5{ --w:30%;  --t:55%;  --l:62%; }
 
-  /* Debug (press "d") */
+  /* Debug (press “d”) */
   body.debug .slot{outline:2px dashed rgba(255,255,255,.8)}
   body.debug .slot::after{
     content:attr(data-slot);
@@ -129,13 +122,13 @@
 </head>
 <body>
 
-<!-- ===================== DESKTOP SCENE ===================== -->
-<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers" data-has-overlay="true">
+<!-- ===================== DESKTOP ===================== -->
+<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers">
   <!-- #1 -->
   <div class="slot slot-1" data-slot="#1">
     <a class="sticker" href="#" aria-label="Open FiradPatra">
       <span class="sr-only">FiradPatra</span>
-      <img src="pc/fp.png" alt="FiradPatra sticker">
+      <img src="/pc/fp.png" alt="FiradPatra sticker">
     </a>
   </div>
 
@@ -143,7 +136,7 @@
   <div class="slot slot-2" data-slot="#2">
     <a class="sticker" href="#" aria-label="Open blog post">
       <span class="sr-only">Blog Post</span>
-      <img src="pc/post.png" alt="Poster sticker">
+      <img src="/pc/post.png" alt="Poster sticker">
     </a>
   </div>
 
@@ -151,17 +144,17 @@
   <div class="slot slot-3" data-slot="#3" aria-live="polite">
     <a class="sticker" href="#" aria-label="Open Kathmandu poster">
       <span class="sr-only">Kathmandu Poster</span>
-      <img src="pc/ktm.png" alt="Kathmandu poster sticker">
+      <img src="/pc/ktm.png" alt="Kathmandu poster sticker">
     </a>
     <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
-    <a class="btn dl"  href="ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+    <a class="btn dl"  href="/ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
   </div>
 
   <!-- #4 -->
   <div class="slot slot-4" data-slot="#4">
     <a class="sticker" href="#" aria-label="Open YouTube">
       <span class="sr-only">YouTube</span>
-      <img src="pc/yt.png" alt="YouTube sticker">
+      <img src="/pc/yt.png" alt="YouTube sticker">
     </a>
   </div>
 
@@ -169,18 +162,18 @@
   <div class="slot slot-5" data-slot="#5">
     <a class="sticker" href="#" aria-label="Open px1rt">
       <span class="sr-only">px1rt</span>
-      <img src="pc/px1rt.png" alt="px1rt sticker">
+      <img src="/pc/px1rt.png" alt="px1rt sticker">
     </a>
   </div>
 </section>
 
-<!-- ===================== MOBILE SCENE ===================== -->
-<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers" data-has-overlay="true">
+<!-- ===================== MOBILE ===================== -->
+<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers">
   <!-- #1 -->
   <div class="slot slot-1" data-slot="#1">
     <a class="sticker" href="#" aria-label="Open FiradPatra">
       <span class="sr-only">FiradPatra</span>
-      <img src="mobile/fp.png" alt="FiradPatra sticker">
+      <img src="/mobile/fp.png" alt="FiradPatra sticker">
     </a>
   </div>
 
@@ -188,7 +181,7 @@
   <div class="slot slot-2" data-slot="#2">
     <a class="sticker" href="#" aria-label="Open blog post">
       <span class="sr-only">Blog Post</span>
-      <img src="mobile/post.png" alt="Poster sticker">
+      <img src="/mobile/post.png" alt="Poster sticker">
     </a>
   </div>
 
@@ -196,17 +189,17 @@
   <div class="slot slot-3" data-slot="#3">
     <a class="sticker" href="#" aria-label="Open Kathmandu poster">
       <span class="sr-only">Kathmandu Poster</span>
-      <img src="mobile/ktm.png" alt="Kathmandu poster sticker">
+      <img src="/mobile/ktm.png" alt="Kathmandu poster sticker">
     </a>
     <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
-    <a class="btn dl"  href="ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+    <a class="btn dl"  href="/ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
   </div>
 
   <!-- #4 -->
   <div class="slot slot-4" data-slot="#4">
     <a class="sticker" href="#" aria-label="Open YouTube">
       <span class="sr-only">YouTube</span>
-      <img src="mobile/yt.png" alt="YouTube sticker">
+      <img src="/mobile/yt.png" alt="YouTube sticker">
     </a>
   </div>
 
@@ -214,60 +207,18 @@
   <div class="slot slot-5" data-slot="#5">
     <a class="sticker" href="#" aria-label="Open px1rt">
       <span class="sr-only">px1rt</span>
-      <img src="mobile/px1rt.png" alt="px1rt sticker">
+      <img src="/mobile/px1rt.png" alt="px1rt sticker">
     </a>
   </div>
 </section>
 
 <script>
-/* -----------------------------------------------------------
-   Robust image loader
-   - Ensures bg/overlay URLs resolve
-   - If an overlay is missing, we disable it (no black screen)
-   - If a bg is missing, we fall back to a neutral gradient
------------------------------------------------------------ */
-(function(){
-  const $ = (sel)=>document.querySelector(sel);
-  const setVar = (name, val)=>document.documentElement.style.setProperty(name, val);
-
-  function probe(url, onok, onfail){
-    const im = new Image();
-    im.onload = ()=>onok&&onok(url);
-    im.onerror = ()=>onfail&&onfail(url);
-    im.src = url + (url.includes('?')?'&':'?') + 'v=' + Date.now(); // bust caches on hosts/cdn
-  }
-
-  // DESKTOP
-  probe('pc/bg.png',
-    ()=>setVar('--pc-bg',"url('pc/bg.png')"),
-    ()=>{
-      setVar('--pc-bg',
-        "linear-gradient(180deg, rgba(16,16,16,1) 0%, rgba(0,0,0,1) 100%)");
-    }
-  );
-  probe('pc/overlay.png',
-    ()=>{ /* ok */ },
-    ()=>{ $('.pc')?.setAttribute('data-has-overlay','false'); }
-  );
-
-  // MOBILE
-  probe('mobile/bg.png',
-    ()=>setVar('--m-bg',"url('mobile/bg.png')"),
-    ()=>{
-      setVar('--m-bg',
-        "linear-gradient(180deg, rgba(16,16,16,1) 0%, rgba(0,0,0,1) 100%)");
-    }
-  );
-  probe('mobile/overlay.png',
-    ()=>{ /* ok */ },
-    ()=>{ $('.mobile')?.setAttribute('data-has-overlay','false'); }
-  );
-
-  // Optional: press "d" to show slot boxes
-  addEventListener('keydown', e=>{
-    if(e.key.toLowerCase()==='d'){ document.body.classList.toggle('debug'); }
-  }, {passive:true});
-})();
+  // Debug toggle: press "d" to outline slots & show numbers
+  (function(){
+    addEventListener('keydown', e=>{
+      if(e.key.toLowerCase()==='d'){ document.body.classList.toggle('debug'); }
+    }, {passive:true});
+  }());
 </script>
 </body>
 </html>
