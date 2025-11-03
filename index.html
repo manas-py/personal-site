@@ -1,191 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manas Bhandari - Personal Site</title>
-  <style>
-    :root {
-      /* desktop billboard slots */
-      --pc-slot1-top: 4.583%;  --pc-slot1-left: 17.760%;  --pc-slot1-w: 20.964%;  --pc-slot1-h: 24.537%;
-      --pc-slot1-img-w: 477.019%;  --pc-slot1-img-x: 84.721%;  --pc-slot1-img-y: 18.679%;
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personal Site — Layered Scene with Clickable Stickers</title>
+<style>
+  :root{
+    /* Global controls */
+    --overlay-opacity: .25;            /* adjust to taste */
+    --overlay-blend: soft-light;       /* e.g., overlay, multiply, screen */
+  }
 
-      --pc-slot2-top: 0%;      --pc-slot2-left: 0%;       --pc-slot2-w: 100%;    --pc-slot2-h: 100%;
-      --pc-slot2-img-w: 100%;    --pc-slot2-img-x: 0%;      --pc-slot2-img-y: 0%;
+  /* Reset & base */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    background:#000;
+    color:#111;
+    overflow:hidden; /* ensure the scene is the only scroll area */
+  }
 
-      --pc-slot3-top: 12.870%;  --pc-slot3-left: 70.286%;  --pc-slot3-w: 15.807%; --pc-slot3-h: 20.231%;
-      --pc-slot3-img-w: 632.619%; --pc-slot3-img-x: 444.646%; --pc-slot3-img-y: 63.616%;
+  /* Screen-reader only text */
+  .sr-only{
+    position:absolute!important;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);
+    white-space:nowrap;border:0;
+  }
 
-      --pc-slot4-top: 27.083%;  --pc-slot4-left: 20.391%;  --pc-slot4-w: 9.974%;  --pc-slot4-h: 25.926%;
-      --pc-slot4-img-w: 1002.611%; --pc-slot4-img-x: 204.439%; --pc-slot4-img-y: 104.464%;
+  /* Scene containers */
+  .scene{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    isolation:isolate; /* keep blend effects contained */
+  }
+  /* Background layer via ::before */
+  .scene::before{
+    content:"";
+    position:absolute; inset:0;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    z-index:0; /* bg is bottom-most */
+  }
+  /* Overlay layer via ::after */
+  .scene::after{
+    content:"";
+    position:absolute; inset:0;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    mix-blend-mode: var(--overlay-blend);
+    opacity: var(--overlay-opacity);
+    pointer-events:none;        /* clicks pass through */
+    z-index:2;                  /* overlay above stickers */
+  }
 
-      --pc-slot5-top: 27.593%;  --pc-slot5-left: 72.057%;  --pc-slot5-w: 12.161%; --pc-slot5-h: 24.537%;
-      --pc-slot5-img-w: 822.270%; --pc-slot5-img-x: 592.505%; --pc-slot5-img-y: 112.453%;
-    }
+  /* Desktop assets on .pc */
+  .pc::before{ background-image:url('pc/bg.png'); }
+  .pc::after { background-image:url('pc/overlay.png'); }
 
-    @media (max-width: 800px) {
-      :root {
-        --m-slot1-top: 26.510%; --m-slot1-left: 0%;      --m-slot1-w: 27.731%; --m-slot1-h: 11.302%;
-        --m-slot1-img-w: 360.601%; --m-slot1-img-x: 0%;      --m-slot1-img-y: 234.562%;
+  /* Mobile assets on .mobile */
+  .mobile::before{ background-image:url('mobile/bg.png'); }
+  .mobile::after { background-image:url('mobile/overlay.png'); }
 
-        --m-slot2-top: 23.958%; --m-slot2-left: 25.278%; --m-slot2-w: 56.389%; --m-slot2-h: 10.677%;
-        --m-slot2-img-w: 177.340%; --m-slot2-img-x: 44.828%; --m-slot2-img-y: 224.390%;
+  /* Responsive switch: desktop default */
+  .pc{ display:block; }
+  .mobile{ display:none; }
+  @media (max-width:800px){
+    .pc{ display:none; }
+    .mobile{ display:block; }
+  }
 
-        --m-slot3-top: 30.547%; --m-slot3-left: 76.111%; --m-slot3-w: 23.889%; --m-slot3-h: 9.818%;
-        --m-slot3-img-w: 418.605%; --m-slot3-img-x: 318.605%; --m-slot3-img-y: 311.141%;
+  /* Sticker slots (wrappers so we can attach buttons to #3) */
+  .slot{
+    position:absolute;
+    z-index:1; /* between bg and overlay */
+    width:var(--w);
+    left:var(--l);
+    top:var(--t);
+  }
+  /* Anchor that holds the sticker image */
+  .sticker{
+    display:block;
+    width:100%;
+    text-decoration:none;
+    outline:none;
+  }
+  .sticker img{
+    display:block;
+    width:100%;
+    height:auto;
+  }
 
-        --m-slot4-top: 37.448%; --m-slot4-left: 0%;      --m-slot4-w: 14.907%; --m-slot4-h: 12.578%;
-        --m-slot4-img-w: 670.807%; --m-slot4-img-x: 0%;      --m-slot4-img-y: 297.723%;
+  /* Tiny rounded buttons for KTM (#3) */
+  .btn{
+    position:absolute;
+    display:inline-block;
+    font-size:12px;
+    line-height:1;
+    padding:.45rem .6rem;
+    border-radius:999px;
+    background:#111;
+    color:#fff;
+    text-decoration:none;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+    transition:transform .08s ease, opacity .2s ease;
+    user-select:none;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn:active{ transform:translateY(0); }
+  .btn:focus{ outline:2px solid #fff; outline-offset:2px; }
 
-        --m-slot5-top: 37.682%; --m-slot5-left: 78.843%; --m-slot5-w: 18.611%; --m-slot5-h: 11.901%;
-        --m-slot5-img-w: 537.313%; --m-slot5-img-x: 423.632%; --m-slot5-img-y: 316.630%;
-      }
-    }
+  /* By default we pin the buttons to the bottom-right corner of slot #3's box */
+  .slot-3 .btn.dl { right:.4rem; bottom:.4rem; }
+  .slot-3 .btn.buy{ right:4.6rem; bottom:.4rem; }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; background: #0b0b0b; }
-    a { text-decoration: none; }
-    figure { margin: 0; }
+  /* Optional: show a subtle drop shadow on all stickers for depth */
+  .sticker img{ filter: drop-shadow(0 10px 18px rgba(0,0,0,.25)); }
 
-    .wrap { position: relative; min-height: 100vh; width: 100vw; height: 100vh; margin: 0; padding: 0; }
+  /* ---------- Desktop slot defaults (percent-of-viewport) ---------- */
+  .pc .slot-1{ --w:42%;   --t:5.5%;  --l:7%;    }
+  .pc .slot-2{ --w:31%;   --t:7.5%;  --l:36.5%; }
+  .pc .slot-3{ --w:24%;   --t:7.5%;  --l:71.5%; }
+  .pc .slot-4{ --w:14%;   --t:35%;   --l:20.5%; }
+  .pc .slot-5{ --w:15%;   --t:34.5%; --l:70%;   }
 
-    .scene {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-      background: #0b0b0b;
-      isolation: isolate;
-    }
+  /* ---------- Mobile slot defaults (tweak freely later) ---------- */
+  .mobile .slot-1{ --w:70%;  --t:6%;   --l:6%;  }
+  .mobile .slot-2{ --w:58%;  --t:14%;  --l:20%; }
+  .mobile .slot-3{ --w:50%;  --t:8%;   --l:46%; }
+  .mobile .slot-4{ --w:28%;  --t:54%;  --l:8%;  }
+  .mobile .slot-5{ --w:30%;  --t:55%;  --l:62%; }
 
-    .scene img { display: block; }
-
-    .scene.pc { display: block; }
-    .scene.mobile { display: none; }
-
-    @media (max-width: 800px) {
-      .scene.pc { display: none; }
-      .scene.mobile { display: block; }
-    }
-
-    .scene-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .slot { position: absolute; display: block; overflow: hidden; z-index: 3; }
-    .slot > a { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; }
-    .slot img { position: absolute; display: block; height: auto; pointer-events: none; }
-
-    .pc .slot.s1 { top: var(--pc-slot1-top); left: var(--pc-slot1-left); width: var(--pc-slot1-w); height: var(--pc-slot1-h); }
-    .pc .slot.s1 img { width: var(--pc-slot1-img-w); top: calc(-1 * var(--pc-slot1-img-y)); left: calc(-1 * var(--pc-slot1-img-x)); }
-
-    .pc .slot.s2 { top: var(--pc-slot2-top); left: var(--pc-slot2-left); width: var(--pc-slot2-w); height: var(--pc-slot2-h); }
-    .pc .slot.s2 img { width: var(--pc-slot2-img-w); top: calc(-1 * var(--pc-slot2-img-y)); left: calc(-1 * var(--pc-slot2-img-x)); }
-
-    .pc .slot.s3 { top: var(--pc-slot3-top); left: var(--pc-slot3-left); width: var(--pc-slot3-w); height: var(--pc-slot3-h); }
-    .pc .slot.s3 img { width: var(--pc-slot3-img-w); top: calc(-1 * var(--pc-slot3-img-y)); left: calc(-1 * var(--pc-slot3-img-x)); }
-
-    .pc .slot.s4 { top: var(--pc-slot4-top); left: var(--pc-slot4-left); width: var(--pc-slot4-w); height: var(--pc-slot4-h); }
-    .pc .slot.s4 img { width: var(--pc-slot4-img-w); top: calc(-1 * var(--pc-slot4-img-y)); left: calc(-1 * var(--pc-slot4-img-x)); }
-
-    .pc .slot.s5 { top: var(--pc-slot5-top); left: var(--pc-slot5-left); width: var(--pc-slot5-w); height: var(--pc-slot5-h); }
-    .pc .slot.s5 img { width: var(--pc-slot5-img-w); top: calc(-1 * var(--pc-slot5-img-y)); left: calc(-1 * var(--pc-slot5-img-x)); }
-
-    .mobile .slot.s1 { top: var(--m-slot1-top); left: var(--m-slot1-left); width: var(--m-slot1-w); height: var(--m-slot1-h); }
-    .mobile .slot.s1 img { width: var(--m-slot1-img-w); top: calc(-1 * var(--m-slot1-img-y)); left: calc(-1 * var(--m-slot1-img-x)); }
-
-    .mobile .slot.s2 { top: var(--m-slot2-top); left: var(--m-slot2-left); width: var(--m-slot2-w); height: var(--m-slot2-h); }
-    .mobile .slot.s2 img { width: var(--m-slot2-img-w); top: calc(-1 * var(--m-slot2-img-y)); left: calc(-1 * var(--m-slot2-img-x)); }
-
-    .mobile .slot.s3 { top: var(--m-slot3-top); left: var(--m-slot3-left); width: var(--m-slot3-w); height: var(--m-slot3-h); }
-    .mobile .slot.s3 img { width: var(--m-slot3-img-w); top: calc(-1 * var(--m-slot3-img-y)); left: calc(-1 * var(--m-slot3-img-x)); }
-
-    .mobile .slot.s4 { top: var(--m-slot4-top); left: var(--m-slot4-left); width: var(--m-slot4-w); height: var(--m-slot4-h); }
-    .mobile .slot.s4 img { width: var(--m-slot4-img-w); top: calc(-1 * var(--m-slot4-img-y)); left: calc(-1 * var(--m-slot4-img-x)); }
-
-    .mobile .slot.s5 { top: var(--m-slot5-top); left: var(--m-slot5-left); width: var(--m-slot5-w); height: var(--m-slot5-h); }
-    .mobile .slot.s5 img { width: var(--m-slot5-img-w); top: calc(-1 * var(--m-slot5-img-y)); left: calc(-1 * var(--m-slot5-img-x)); }
-
-    .fade { animation: fade .6s ease both; }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
-    .debug .slot { outline: 2px dashed rgba(0,255,0,.6); overflow: visible; }
-    .debug .slot::after { content: attr(data-slot); position: absolute; top: -1.2rem; left: 0; padding: .2rem .4rem; font: 700 12px/1 system-ui; background: rgba(0,0,0,.6); color: #0f0; border-radius: .25rem; }
-  </style>
+  /* ---------- Debug mode (press “d” to toggle) ---------- */
+  body.debug .slot{ outline:2px dashed rgba(255,255,255,.75); }
+  body.debug .slot::after{
+    content:attr(data-slot);
+    position:absolute; top:-.9rem; left:-.9rem;
+    background:#ff2; color:#111;
+    font:600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    border-radius:6px; padding:.25rem .35rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.3);
+  }
+</style>
 </head>
 <body>
-  <script>
-    // Press 'd' to toggle debug outlines for alignment help
-    document.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === 'd') {
+
+<!-- ===================== DESKTOP SCENE ===================== -->
+<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers">
+
+  <!-- #1: fp.png -->
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="Open FiradPatra">
+      <span class="sr-only">FiradPatra</span>
+      <img src="pc/fp.png" alt="FiradPatra sticker">
+    </a>
+  </div>
+
+  <!-- #2: post.png -->
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Open blog post">
+      <span class="sr-only">Blog Post</span>
+      <img src="pc/post.png" alt="Poster sticker">
+    </a>
+  </div>
+
+  <!-- #3: ktm.png with Download + Buy buttons -->
+  <div class="slot slot-3" data-slot="#3" aria-live="polite">
+    <a class="sticker" href="#" aria-label="Open Kathmandu poster">
+      <span class="sr-only">Kathmandu Poster</span>
+      <img src="pc/ktm.png" alt="Kathmandu poster sticker">
+    </a>
+    <a class="btn dl" href="ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
+  </div>
+
+  <!-- #4: yt.png -->
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="Open YouTube">
+      <span class="sr-only">YouTube</span>
+      <img src="pc/yt.png" alt="YouTube sticker">
+    </a>
+  </div>
+
+  <!-- #5: px1rt.png -->
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Open px1rt">
+      <span class="sr-only">px1rt</span>
+      <img src="pc/px1rt.png" alt="px1rt sticker">
+    </a>
+  </div>
+</section>
+
+<!-- ===================== MOBILE SCENE ===================== -->
+<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers">
+
+  <!-- #1: fp.png -->
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="Open FiradPatra">
+      <span class="sr-only">FiradPatra</span>
+      <img src="mobile/fp.png" alt="FiradPatra sticker">
+    </a>
+  </div>
+
+  <!-- #2: post.png -->
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Open blog post">
+      <span class="sr-only">Blog Post</span>
+      <img src="mobile/post.png" alt="Poster sticker">
+    </a>
+  </div>
+
+  <!-- #3: ktm.png with buttons -->
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Open Kathmandu poster">
+      <span class="sr-only">Kathmandu Poster</span>
+      <img src="mobile/ktm.png" alt="Kathmandu poster sticker">
+    </a>
+    <a class="btn dl" href="ktm.pdf" download aria-label="Download Kathmandu poster PDF">Download</a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener" aria-label="Buy Kathmandu poster">Buy</a>
+  </div>
+
+  <!-- #4: yt.png -->
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="Open YouTube">
+      <span class="sr-only">YouTube</span>
+      <img src="mobile/yt.png" alt="YouTube sticker">
+    </a>
+  </div>
+
+  <!-- #5: px1rt.png -->
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Open px1rt">
+      <span class="sr-only">px1rt</span>
+      <img src="mobile/px1rt.png" alt="px1rt sticker">
+    </a>
+  </div>
+</section>
+
+<script>
+  // Optional Debug Toggle: press "d" to outline slots and show slot numbers
+  (function(){
+    document.addEventListener('keydown', function(e){
+      if(e.key.toLowerCase() === 'd'){
         document.body.classList.toggle('debug');
       }
-    });
-  </script>
-  <div class="wrap">
-
-    <!-- ============================= PC ============================== -->
-    <figure class="scene pc" aria-label="Desktop version">
-      <img class="scene-bg fade" src="pc/background.png" alt="Subway background (desktop)" />
-
-      <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
-        <img src="pc/fp.png" alt="FiradPatra banner" />
-      </a>
-      <a class="slot s2" data-slot="2" href="#" aria-label="Manas post" title="Manas post">
-        <img src="pc/post.png" alt="Center banner" />
-      </a>
-
-      <div class="slot s3" data-slot="3">
-        <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
-          <img src="pc/ktm.png" alt="Kathmandu banner" />
-        </a>
-      </div>
-
-      <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
-        <img src="pc/yt.png" alt="YouTube poster" />
-      </a>
-
-      <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
-        <img src="pc/px1rt.png" alt="Px1.rt poster" />
-      </a>
-    </figure>
-
-
-    <!-- ============================ MOBILE =========================== -->
-    <figure class="scene mobile" aria-label="Mobile version">
-      <img class="scene-bg fade" src="mobile/background.png" alt="Subway background (mobile)" />
-
-      <a class="slot s1" data-slot="1" href="#" aria-label="FiradPatra" title="FiradPatra">
-        <img src="mobile/fp.png" alt="FiradPatra banner (mobile)" />
-      </a>
-      <a class="slot s2" data-slot="2" href="#" aria-label="Manas post" title="Manas post">
-        <img src="mobile/post.png" alt="Center banner (mobile)" />
-      </a>
-
-      <div class="slot s3" data-slot="3">
-        <a href="#" aria-label="Kathmandu (details)" title="Kathmandu">
-          <img src="mobile/ktm.png" alt="Kathmandu banner (mobile)" />
-        </a>
-      </div>
-
-      <a class="slot s4" data-slot="4" href="#" aria-label="YouTube" title="YouTube">
-        <img src="mobile/yt.png" alt="YouTube poster (mobile)" />
-      </a>
-
-      <a class="slot s5" data-slot="5" href="#" aria-label="Px1.rt" title="Px1.rt">
-        <img src="mobile/px1rt.png" alt="Px1.rt poster (mobile)" />
-      </a>
-    </figure>
-
-  </div>
+    }, {passive:true});
+  }());
+</script>
 </body>
 </html>
