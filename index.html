@@ -6,8 +6,8 @@
 <title>Personal Site — Layered Scene with Overlay</title>
 <style>
   :root{
-    --overlay-opacity:2.0;          /* matches Krita's 15% overlay layer */
-    --overlay-blend:overlay;        /* Krita-like blend mode */
+    --overlay-opacity:2.0;          
+    --overlay-blend:overlay;
   }
 
   html,body{
@@ -33,24 +33,40 @@
     position:absolute;
     inset:0;
     background-size:cover;
-    background-position:center;
     background-repeat:no-repeat;
   }
 
-  .scene::before{ z-index:0; } /* background */
-  .scene::after{
-    z-index:2; /* overlay */
+  /* ✅ Background shifted upward slightly for better framing */
+  .pc::before{
+    background-image:url('/pc/bg.png');
+    background-position:center top -8%; /* Move background up a bit */
+    z-index:0;
+  }
+
+  .pc::after{
+    background-image:url('/pc/overlay.png');
+    background-size:cover;
+    background-position:center top -8%;
     opacity:var(--overlay-opacity);
     mix-blend-mode:var(--overlay-blend);
     pointer-events:none;
+    z-index:2;
   }
 
-  /* Assign desktop and mobile backgrounds and overlays */
-  .pc::before{ background-image:url('/pc/bg.png'); }
-  .pc::after { background-image:url('/pc/overlay.png'); }
-
-  .mobile::before{ background-image:url('/mobile/bg.png'); }
-  .mobile::after { background-image:url('/mobile/overlay.png'); }
+  .mobile::before{
+    background-image:url('/mobile/bg.png');
+    background-position:center;
+    z-index:0;
+  }
+  .mobile::after{
+    background-image:url('/mobile/overlay.png');
+    background-size:cover;
+    background-position:center;
+    opacity:0.25;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+    z-index:2;
+  }
 
   /* responsive switch */
   .pc{display:block;}
@@ -70,7 +86,12 @@
   }
 
   .sticker{display:block;width:100%;text-decoration:none;}
-  .sticker img{width:100%;height:auto;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));}
+  .sticker img{
+    width:100%;
+    height:auto;
+    display:block;
+    filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
 
   /* Buttons for KTM */
   .btn{
