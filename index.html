@@ -239,4 +239,24 @@
       const im = new Image();
       im.onload = ()=>res(true);
       im.onerror = ()=>res(false);
-      im.src = u + `?v=${Date.now()
+      im.src = u + `?v=${Date.now()}`; // bust cache during setup
+    })));
+  }
+
+  const pcFrames = buildFrameList('pc');
+  const mFrames  = buildFrameList('mobile');
+
+  const pcScene = document.querySelector('.pc');
+  const mScene  = document.querySelector('.mobile');
+
+  preload(pcFrames).then(()=> startLoop(pcScene, pcFrames, FPS_PC));
+  preload(mFrames ).then(()=> startLoop(mScene,  mFrames,  FPS_MOBILE));
+
+  // Debug toggle
+  addEventListener('keydown', e=>{
+    if(e.key.toLowerCase()==='d'){ document.body.classList.toggle('debug'); }
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>
