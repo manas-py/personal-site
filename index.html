@@ -6,8 +6,9 @@
 <title>Personal Site — Layered Scene with Overlay</title>
 <style>
   :root{
-    --overlay-opacity:2.0;          
-    --overlay-blend:overlay;
+    /* You set this to 2.0 earlier; leaving as-is */
+    --overlay-opacity: 2.0;
+    --overlay-blend: overlay;
   }
 
   html,body{
@@ -27,45 +28,58 @@
     overflow:hidden;
   }
 
+  /* TRUE layers: bg + overlay as pseudo-elements */
   .scene::before,
   .scene::after{
     content:"";
     position:absolute;
     inset:0;
-    background-size:cover;
     background-repeat:no-repeat;
+    background-size:cover;            /* default; overridden for mobile below */
   }
 
-  /* ✅ Background shifted upward slightly for better framing */
-  .pc::before{
-    background-image:url('/pc/bg.png');
-    background-position:center top -8%; /* Move background up a bit */
-    z-index:0;
-  }
-
-  .pc::after{
-    background-image:url('/pc/overlay.png');
-    background-size:cover;
-    background-position:center top -8%;
+  /* Z-order: bg (0) < stickers (1) < overlay (2) */
+  .scene::before{ z-index:0; }
+  .scene::after{
+    z-index:2;
     opacity:var(--overlay-opacity);
     mix-blend-mode:var(--overlay-blend);
     pointer-events:none;
-    z-index:2;
   }
 
+  /* ---------- DESKTOP (PC) ---------- */
+  .pc::before{
+    background-image:url('/pc/bg.png');
+    /* Nudge up a bit so the top “post” greenscreen is more visible */
+    background-position:center top -8%;
+  }
+  .pc::after{
+    background-image:url('/pc/overlay.png');
+    background-position:center top -8%;
+  }
+
+  /* ---------- MOBILE ---------- */
   .mobile::before{
     background-image:url('/mobile/bg.png');
-    background-position:center;
-    z-index:0;
+    /* Fit by WIDTH on mobile (no horizontal cropping); crop top/bottom as needed */
+    background-size:100% auto;         /* width = viewport width, preserve ratio */
+    background-position:top center;    /* start a bit higher so top is visible */
   }
   .mobile::after{
     background-image:url('/mobile/overlay.png');
-    background-size:cover;
-    background-position:center;
-    opacity:0.25;
-    mix-blend-mode:overlay;
-    pointer-events:none;
-    z-index:2;
+    background-size:100% auto;
+    background-position:top center;
+    opacity:.25;                        /* gentler mobile overlay; tweak if you want */
+  }
+
+  /* If the phone is extremely tall (would letterbox), fall back to cover
+     so we still fill height; slight side-crop may occur on ultra-tall screens */
+  @media (max-aspect-ratio: 10/16){
+    .mobile::before,
+    .mobile::after{
+      background-size:cover;
+      background-position:center top;
+    }
   }
 
   /* responsive switch */
@@ -76,7 +90,7 @@
     .mobile{display:block;}
   }
 
-  /* Stickers */
+  /* Stickers (clickable anchors) */
   .slot{
     position:absolute;
     z-index:1;
@@ -84,7 +98,6 @@
     top:var(--t);
     left:var(--l);
   }
-
   .sticker{display:block;width:100%;text-decoration:none;}
   .sticker img{
     width:100%;
@@ -93,7 +106,7 @@
     filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));
   }
 
-  /* Buttons for KTM */
+  /* KTM action buttons */
   .btn{
     position:absolute;
     bottom:.4rem;
@@ -108,21 +121,21 @@
   .btn.buy{ right:4.9rem; }
   .btn.dl{ right:.4rem; }
 
-  /* Perfect ad alignment (based on Krita greenscreen) */
+  /* ---------- Desktop ad alignment (greenscreen targets) ---------- */
   .pc .slot-1{ --w:15%; --t:8%;  --l:12%; }  /* FiradPatra */
-  .pc .slot-2{ --w:25%; --t:7%;  --l:37%; }  /* Welcome poster */
-  .pc .slot-3{ --w:17%; --t:7%;  --l:70%; }  /* Kathmandu poster */
-  .pc .slot-4{ --w:15%; --t:36%; --l:22%; }  /* YouTube poster */
-  .pc .slot-5{ --w:15%; --t:36%; --l:69%; }  /* Px1rt poster */
+  .pc .slot-2{ --w:25%; --t:7%;  --l:37%; }  /* Welcome / Post */
+  .pc .slot-3{ --w:17%; --t:7%;  --l:70%; }  /* Kathmandu */
+  .pc .slot-4{ --w:15%; --t:36%; --l:22%; }  /* YouTube */
+  .pc .slot-5{ --w:15%; --t:36%; --l:69%; }  /* Px1rt */
 
-  /* Mobile defaults (to tweak later) */
+  /* ---------- Mobile defaults (tweak later) ---------- */
   .mobile .slot-1{ --w:70%;  --t:6%;  --l:6%; }
   .mobile .slot-2{ --w:58%;  --t:14%; --l:20%; }
   .mobile .slot-3{ --w:50%;  --t:8%;  --l:46%; }
   .mobile .slot-4{ --w:28%;  --t:54%; --l:8%; }
   .mobile .slot-5{ --w:30%;  --t:55%; --l:62%; }
 
-  /* Debug outlines */
+  /* Debug outlines (press “d”) */
   body.debug .slot{outline:2px dashed rgba(255,255,255,.8);}
   body.debug .slot::after{
     content:attr(data-slot);
@@ -135,44 +148,64 @@
 <body>
 
 <!-- Desktop Scene -->
-<section class="scene pc">
+<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers">
   <div class="slot slot-1" data-slot="#1">
-    <a class="sticker" href="#"><img src="/pc/fp.png" alt="FiradPatra"></a>
+    <a class="sticker" href="#" aria-label="FiradPatra">
+      <img src="/pc/fp.png" alt="FiradPatra">
+    </a>
   </div>
   <div class="slot slot-2" data-slot="#2">
-    <a class="sticker" href="#"><img src="/pc/post.png" alt="Welcome Poster"></a>
+    <a class="sticker" href="#" aria-label="Welcome poster">
+      <img src="/pc/post.png" alt="Welcome poster">
+    </a>
   </div>
   <div class="slot slot-3" data-slot="#3">
-    <a class="sticker" href="#"><img src="/pc/ktm.png" alt="Kathmandu Poster"></a>
-    <a class="btn buy" href="#" target="_blank">Buy</a>
-    <a class="btn dl" href="/ktm.pdf" download>Download</a>
+    <a class="sticker" href="#" aria-label="Kathmandu poster">
+      <img src="/pc/ktm.png" alt="Kathmandu poster">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener">Buy</a>
+    <a class="btn dl" href="/ktm.pdf" download rel="noopener">Download</a>
   </div>
   <div class="slot slot-4" data-slot="#4">
-    <a class="sticker" href="#"><img src="/pc/yt.png" alt="YouTube Poster"></a>
+    <a class="sticker" href="#" aria-label="YouTube poster">
+      <img src="/pc/yt.png" alt="YouTube poster">
+    </a>
   </div>
   <div class="slot slot-5" data-slot="#5">
-    <a class="sticker" href="#"><img src="/pc/px1rt.png" alt="Px1rt Poster"></a>
+    <a class="sticker" href="#" aria-label="Px1rt poster">
+      <img src="/pc/px1rt.png" alt="Px1rt poster">
+    </a>
   </div>
 </section>
 
 <!-- Mobile Scene -->
-<section class="scene mobile">
+<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers">
   <div class="slot slot-1" data-slot="#1">
-    <a class="sticker" href="#"><img src="/mobile/fp.png" alt="FiradPatra"></a>
+    <a class="sticker" href="#" aria-label="FiradPatra">
+      <img src="/mobile/fp.png" alt="FiradPatra">
+    </a>
   </div>
   <div class="slot slot-2" data-slot="#2">
-    <a class="sticker" href="#"><img src="/mobile/post.png" alt="Welcome Poster"></a>
+    <a class="sticker" href="#" aria-label="Welcome poster">
+      <img src="/mobile/post.png" alt="Welcome poster">
+    </a>
   </div>
   <div class="slot slot-3" data-slot="#3">
-    <a class="sticker" href="#"><img src="/mobile/ktm.png" alt="Kathmandu Poster"></a>
-    <a class="btn buy" href="#" target="_blank">Buy</a>
-    <a class="btn dl" href="/ktm.pdf" download>Download</a>
+    <a class="sticker" href="#" aria-label="Kathmandu poster">
+      <img src="/mobile/ktm.png" alt="Kathmandu poster">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener">Buy</a>
+    <a class="btn dl" href="/ktm.pdf" download rel="noopener">Download</a>
   </div>
   <div class="slot slot-4" data-slot="#4">
-    <a class="sticker" href="#"><img src="/mobile/yt.png" alt="YouTube Poster"></a>
+    <a class="sticker" href="#" aria-label="YouTube poster">
+      <img src="/mobile/yt.png" alt="YouTube poster">
+    </a>
   </div>
   <div class="slot slot-5" data-slot="#5">
-    <a class="sticker" href="#"><img src="/mobile/px1rt.png" alt="Px1rt Poster"></a>
+    <a class="sticker" href="#" aria-label="Px1rt poster">
+      <img src="/mobile/px1rt.png" alt="Px1rt poster">
+    </a>
   </div>
 </section>
 
