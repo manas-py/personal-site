@@ -35,64 +35,54 @@
     position:absolute;
     inset:0;
     background-repeat:no-repeat;
-    background-size:cover;      /* default (PC) — MOBILE overrides below */
-    background-position:center; /* stable framing for PC */
+    background-size:cover;   /* default for PC; mobile overrides below */
   }
 
-  /* Z-order: bg (0) < anim (1) < stickers (2) < overlay (3) */
-  .scene::before{ z-index:0; }              /* BACKGROUND */
-  .anim{
-    position:absolute; inset:0;
-    z-index:1;                               /* TRANSPARENT GIF LAYER */
-    background-repeat:no-repeat;
-    background-size:cover;
-    background-position:center;
-    pointer-events:none;
-  }
-  .slot{ z-index:2; }                        /* STICKERS */
+  /* Z-order: bg (0) < stickers (1) < overlay (2) */
+  .scene::before{ z-index:0; }
   .scene::after{
-    z-index:3;                               /* OVERLAY (blends) */
+    z-index:2;
     opacity:var(--overlay-opacity);
     mix-blend-mode:var(--overlay-blend);
     pointer-events:none;
   }
 
-  /* ---------- PC (restored framing) ---------- */
-  .pc::before { background-image:url('/pc/bg.png'); }
-  .pc .anim   { background-image:url('/pc/anim.gif'); }     /* optional */
-  .pc::after  { background-image:url('/pc/overlay.png'); }
+  /* ---------- PC (unchanged from the good state) ---------- */
+  .pc::before{
+    background-image:url('/pc/bg.png');
+    background-position:center top -8%;  /* slight upward nudge as you liked */
+  }
+  .pc::after{
+    background-image:url('/pc/overlay.png');
+    background-position:center top -8%;
+  }
 
   /* ---------- MOBILE (fit by WIDTH; top/bottom may crop) ---------- */
   .mobile::before{
     background-image:url('/mobile/bg.png');
-  }
-  .mobile .anim{
-    background-image:url('/mobile/anim.gif');               /* optional */
+    background-size:100% auto;       /* fit width exactly */
+    background-position: top center; /* keep the top visible so greenscreens show */
   }
   .mobile::after{
     background-image:url('/mobile/overlay.png');
-    opacity:.25;                                            /* gentler on mobile */
+    background-size:100% auto;
+    background-position: top center;
+    opacity:.25;                     /* gentler mobile overlay; tweak if desired */
+    mix-blend-mode:overlay;
   }
 
-  /* Ensure mobile fits by WIDTH specifically */
-  @media (max-width:800px){
+  /* responsive switch */
+  .pc{display:block;}
+  .mobile{display:none;}
+  @media(max-width:800px){
     .pc{display:none;}
     .mobile{display:block;}
-    .mobile::before,
-    .mobile .anim,
-    .mobile::after{
-      background-size:100% auto;    /* width fits exactly */
-      background-position:top center;/* show more top; crop vertically if needed */
-    }
-  }
-  @media (min-width:801px){
-    .pc{display:block;}
-    .mobile{display:none;}
   }
 
   /* Stickers (clickable anchors) */
   .slot{
     position:absolute;
+    z-index:1;                  /* between bg (0) and overlay (2) */
     width:var(--w);
     top:var(--t);
     left:var(--l);
@@ -110,4 +100,109 @@
     position:absolute;
     bottom:.4rem;
     font-size:12px;
-    padding:.4
+    padding:.4rem .6rem;
+    border-radius:999px;
+    background:#111;
+    color:#fff;
+    text-decoration:none;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  .btn.buy{ right:4.9rem; }
+  .btn.dl{ right:.4rem; }
+
+  /* ---------- Desktop ad alignment (greenscreen targets) ---------- */
+  .pc .slot-1{ --w:15%; --t:8%;  --l:12%; }  /* FiradPatra */
+  .pc .slot-2{ --w:25%; --t:7%;  --l:37%; }  /* Welcome / Post */
+  .pc .slot-3{ --w:17%; --t:7%;  --l:70%; }  /* Kathmandu */
+  .pc .slot-4{ --w:15%; --t:36%; --l:22%; }  /* YouTube */
+  .pc .slot-5{ --w:15%; --t:36%; --l:69%; }  /* Px1rt */
+
+  /* ---------- Mobile defaults (tweak later as needed) ---------- */
+  .mobile .slot-1{ --w:70%;  --t:6%;  --l:6%; }
+  .mobile .slot-2{ --w:58%;  --t:14%; --l:20%; }
+  .mobile .slot-3{ --w:50%;  --t:8%;  --l:46%; }
+  .mobile .slot-4{ --w:28%;  --t:54%; --l:8%; }
+  .mobile .slot-5{ --w:30%;  --t:55%; --l:62%; }
+
+  /* Debug outlines (press “d”) */
+  body.debug .slot{outline:2px dashed rgba(255,255,255,.8);}
+  body.debug .slot::after{
+    content:attr(data-slot);
+    position:absolute;top:-.9rem;left:-.9rem;
+    background:#ff2;color:#111;border-radius:6px;padding:.25rem .35rem;
+    font:600 12px/1.2 monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- Desktop Scene -->
+<section class="scene pc" aria-label="Desktop scene with layered background and interactive stickers">
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="FiradPatra">
+      <img src="/pc/fp.png" alt="FiradPatra">
+    </a>
+  </div>
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Welcome poster">
+      <img src="/pc/post.png" alt="Welcome poster">
+    </a>
+  </div>
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Kathmandu poster">
+      <img src="/pc/ktm.png" alt="Kathmandu poster">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener">Buy</a>
+    <a class="btn dl" href="/ktm.pdf" download rel="noopener">Download</a>
+  </div>
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="YouTube poster">
+      <img src="/pc/yt.png" alt="YouTube poster">
+    </a>
+  </div>
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Px1rt poster">
+      <img src="/pc/px1rt.png" alt="Px1rt poster">
+    </a>
+  </div>
+</section>
+
+<!-- Mobile Scene -->
+<section class="scene mobile" aria-label="Mobile scene with layered background and interactive stickers">
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="FiradPatra">
+      <img src="/mobile/fp.png" alt="FiradPatra">
+    </a>
+  </div>
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="#" aria-label="Welcome poster">
+      <img src="/mobile/post.png" alt="Welcome poster">
+    </a>
+  </div>
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Kathmandu poster">
+      <img src="/mobile/ktm.png" alt="Kathmandu poster">
+    </a>
+    <a class="btn buy" href="#" target="_blank" rel="noopener">Buy</a>
+    <a class="btn dl" href="/ktm.pdf" download rel="noopener">Download</a>
+  </div>
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="YouTube poster">
+      <img src="/mobile/yt.png" alt="YouTube poster">
+    </a>
+  </div>
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Px1rt poster">
+      <img src="/mobile/px1rt.png" alt="Px1rt poster">
+    </a>
+  </div>
+</section>
+
+<script>
+  // Debug toggle: press "d" to show outlines and slot numbers
+  addEventListener('keydown', e=>{
+    if(e.key.toLowerCase()==='d'){ document.body.classList.toggle('debug'); }
+  }, {passive:true});
+</script>
+</body>
+</html>
