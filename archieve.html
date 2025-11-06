@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Archive — Noticeboard</title>
+<style>
+  html,body{height:100%;margin:0;font-family:Helvetica,Arial,sans-serif;background:#cfcfcf;}
+  .wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:36px; box-sizing:border-box;}
+  .board{ position:relative; width:min(1100px,95vw); height:min(700px,84vh); background:#cfcfcf; border-radius:12px; overflow:hidden; box-shadow:0 18px 60px rgba(0,0,0,.45); }
+  .layer.paper, .layer.board-overlay{ position:absolute; inset:0; background-repeat:no-repeat; background-position:center; background-size:cover; pointer-events:none; }
+  .layer.paper{ z-index:0; }
+  .content{ z-index:1; width:76%; max-height:80%; overflow:auto; padding:42px 48px; box-sizing:border-box; color:#111; }
+  .list a{ display:block; margin:8px 0; color:#111; text-decoration:none; font-weight:700; }
+  .topbar{ position:absolute; top:14px; left:14px; z-index:3; }
+  .btn{ font-family:Helvetica,Arial,sans-serif; background:#ffd400; border-radius:10px; padding:.5rem .8rem; font-weight:700; text-decoration:none; color:#111; }
+  @media (max-width:800px){ .board{ width:94vw; height:84vh; } .content{ width:86%; padding:28px; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="board">
+      <div class="layer paper" id="paper-layer" aria-hidden="true"></div>
+      <div class="content" id="archive-content">
+        <p>Loading archive…</p>
+      </div>
+      <div class="layer board-overlay" id="overlay-layer" aria-hidden="true"></div>
+      <div class="topbar"><a href="/" class="btn">Back</a></div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  function isMobile() { return window.matchMedia('(max-width:800px)').matches; }
+  const kind = isMobile() ? 'mobile' : 'pc';
+  document.getElementById('paper-layer').style.backgroundImage = `url('/${kind}/paper.png')`;
+  document.getElementById('overlay-layer').style.backgroundImage = `url('/${kind}/noticeboard.png')`;
+
+  fetch('/archive/list.txt').then(r=>{
+    if(!r.ok) throw new Error('no archive list');
+    return r.text();
+  }).then(txt=>{
+    const el = document.getElementById('archive-content');
+    el.innerHTML = '';
+    const lines = txt.split(/\r?\n/).filter(Boolean);
+    if(!lines.length) { el.innerHTML = '<p>No archived posts yet.</p>'; return; }
+    const container = document.createElement('div'); container.className = 'list';
+    lines.forEach(line=>{
+      const parts = line.split('—').map(s=>s.trim());
+      const a = document.createElement('a');
+      a.href = parts[1] || '#';
+      a.textContent = parts[0] || line;
+      container.appendChild(a);
+    });
+    el.appendChild(container);
+  }).catch(()=>{
+    const el = document.getElementById('archive-content');
+    el.innerHTML = '<p>Create <code>/archive/list.txt</code> to populate your archive.</p>';
+  });
+})();
+</script>
+</body>
+</html>
