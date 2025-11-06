@@ -6,11 +6,10 @@
 <title>Personal Site — Layered Scene (fixed, single-view)</title>
 <style>
   :root{
-    --overlay-opacity: 0.6;     /* valid opacity */
+    --overlay-opacity: 0.6;
     --overlay-blend: overlay;
   }
 
-  /* Basic reset */
   *{box-sizing:border-box}
   html,body{height:100%; margin:0; padding:0}
   body{
@@ -18,134 +17,144 @@
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    overflow:hidden; /* prevent page scrolling — scene is fixed to viewport */
-  }
-
-  /* ---------- SCENE (fixed to viewport) ---------- */
-  .scene {
-    position:fixed;
-    inset:0;
-    width:100%;     /* avoid 100vw overflow */
-    height:100%;
-    min-height:100vh; /* fallback */
     overflow:hidden;
-    isolation:isolate;
-    -webkit-backface-visibility:hidden;
-    backface-visibility:hidden;
-    background-color:#000;
   }
 
-  /* Background / overlay as pseudo-elements (true layers) */
-  .scene::before,
-  .scene::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background-repeat:no-repeat;
-    background-size:cover;        /* ensure fill and avoid black bars */
-    background-position:center center;
-    pointer-events:none;
-  }
-  .scene::before{ z-index:0; } /* background */
-  .scene::after { z-index:3; mix-blend-mode:var(--overlay-blend); opacity:var(--overlay-opacity); pointer-events:none; } /* overlay */
+  /* Scene */
+  .scene{ position:fixed; inset:0; width:100%; height:100%; min-height:100vh; overflow:hidden; isolation:isolate; background-color:#000; }
+  .scene::before, .scene::after{ content:""; position:absolute; inset:0; background-repeat:no-repeat; background-size:cover; background-position:center center; pointer-events:none; }
+  .scene::before{ z-index:0; }
+  .scene::after{ z-index:3; mix-blend-mode:var(--overlay-blend); opacity:var(--overlay-opacity); pointer-events:none; }
 
-  /* Lights layer sits between background and stickers */
-  .lights{
-    position:absolute; inset:0;
-    z-index:1;
-    background-repeat:no-repeat;
-    background-position:center;
-    background-size:auto;
-    pointer-events:none;
-  }
+  .lights{ position:absolute; inset:0; z-index:1; background-repeat:no-repeat; background-position:center; background-size:auto; pointer-events:none; }
 
-  /* Stickers layer */
-  .slot{
-    position:absolute;
-    z-index:2; /* between lights and overlay */
-    top:var(--t);
-    left:var(--l);
-  }
-  .sticker img{
-    display:block; width:auto; height:auto; max-width:none;
-    -webkit-user-drag:none; user-drag:none;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,.35));
-    max-width:14rem;      /* prevents oversized images causing overflow */
-    max-height:22rem;
-  }
+  .slot{ position:absolute; z-index:2; top:var(--t); left:var(--l); }
+  .sticker img{ display:block; width:auto; height:auto; -webkit-user-drag:none; user-drag:none; filter: drop-shadow(0 8px 20px rgba(0,0,0,.35)); max-width:14rem; max-height:22rem; }
 
-  /* ---------- Desktop (PC) scene: default visible on wide screens ---------- */
   .pc{ display:block; }
   .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; }
   .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; }
 
-  /* Desktop slot defaults (tweak as needed) */
-  .pc .slot-1{ --t:8%;  --l:12%; }  /* fp */
-  .pc .slot-2{ --t:7%;  --l:37%; }  /* post */
-  .pc .slot-3{ --t:7%;  --l:70%; }  /* ktm */
-  .pc .slot-4{ --t:36%; --l:22%; }  /* yt */
-  .pc .slot-5{ --t:36%; --l:69%; }  /* px1rt */
-  .pc .slot-6{ --t:12%; --l:74%; }  /* buy */
-  .pc .slot-7{ --t:12%; --l:79%; }  /* download */
-
-  /* ---------- Mobile scene: hidden by default, shown under 800px ---------- */
   .mobile{ display:none; }
   .mobile::before{ background-image:url('/mobile/bg.png'); }
   .mobile::after { background-image:url('/mobile/overlay.png'); }
 
-  .mobile .slot-1{ --t:6%;  --l:6%;  }
-  .mobile .slot-2{ --t:14%; --l:20%; }
-  .mobile .slot-3{ --t:8%;  --l:46%; }
-  .mobile .slot-4{ --t:54%; --l:8%;  }
-  .mobile .slot-5{ --t:55%; --l:62%; }
-  .mobile .slot-6{ --t:18%; --l:70%; }
-  .mobile .slot-7{ --t:18%; --l:78%; }
-
   @media (max-width:800px){
-    .pc{ display:none; }
-    .mobile{ display:block; }
-    .mobile::before,
-    .mobile::after {
-      background-size:cover;     /* use cover to avoid black bars */
-      background-position:top center;
-    }
+    .pc{ display:none; } .mobile{ display:block; }
+    .mobile::before, .mobile::after { background-size:cover; background-position:top center; }
     .mobile .lights { background-size:auto; background-position:center; }
   }
 
-  /* ---------- Footer nav (text-only) ---------- */
-  .footer-nav{
-    position:fixed; left:0; right:0; bottom:14px;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:0 18px; z-index:6; pointer-events:none;
+  .footer-nav{ position:fixed; left:0; right:0; bottom:14px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; z-index:6; pointer-events:none; }
+  .footer-left, .footer-center, .footer-right{ width:33%; display:flex; align-items:center; pointer-events:auto; }
+  .footer-left{ justify-content:flex-start; } .footer-center{ justify-content:center; } .footer-right{ justify-content:flex-end; }
+  .footer-nav a{ font-family:"Helvetica", Arial, sans-serif; color:#fff; text-decoration:none; font-weight:600; text-shadow:0 3px 8px rgba(0,0,0,.6); pointer-events:auto; }
+
+  body.debug .slot{ outline:2px dashed rgba(255,255,255,.85) }
+
+  /* --------- Newsletter modal styles (fixed) ---------- */
+  .modal-backdrop {
+    display:none;                /* show via JS (set to flex) */
+    position:fixed;
+    inset:0;
+    z-index:9999;               /* high above everything */
+    background:rgba(0,0,0,0.45);/* dim the scene */
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
   }
-  .footer-left, .footer-center, .footer-right{
-    width:33%; display:flex; align-items:center; pointer-events:auto;
+
+  .modal-sheet {
+    position:relative;
+    width: min(720px, 94vw);
+    max-width: 720px;
+    max-height: 82vh;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    background: #111; /* fallback behind images */
   }
-  .footer-left{ justify-content:flex-start; }
-  .footer-center{ justify-content:center; }
-  .footer-right{ justify-content:flex-end; }
-  .footer-nav a{
-    font-family:"Helvetica", Arial, sans-serif;
-    color:#fff; text-decoration:none; font-weight:600;
-    text-shadow:0 3px 8px rgba(0,0,0,.6);
+
+  /* show pc image by default, hide mobile; swapped by media query */
+  .modal-art { display:block; width:100%; height:auto; pointer-events:none; user-select:none; }
+  .modal-art.mobile-only { display:none; }
+
+  /* overlay text area on top of image */
+  .modal-overlay {
+    position:absolute;
+    left:0; right:0;
+    bottom:12px;
+    padding:18px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    justify-content:center;
+    z-index:3;
     pointer-events:auto;
   }
 
-  /* Debug outlines */
-  body.debug .slot{ outline:2px dashed rgba(255,255,255,.85) }
-  body.debug .slot::after{
-    content:attr(data-slot);
-    position:absolute; top:-1rem; left:-1rem;
-    background:#ff2;color:#111;border-radius:6px;padding:.25rem .35rem;font:600 12px/1.2 monospace;
+  .modal-heading {
+    position:absolute;
+    left:20px;
+    top:20px;
+    z-index:4;
+    font-family:Helvetica, Arial, sans-serif;
+    font-weight:700;
+    font-size:1.25rem;
+    color:#fff;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
+    pointer-events:none;
   }
 
-  /* Newsletter custom modal styles (kept minimal here) */
-  #newsletter-modal{ display:none; position:fixed; inset:0; z-index:50; align-items:center; justify-content:center; }
+  .modal-input {
+    flex:1;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid rgba(0,0,0,.25);
+    font-family:Helvetica,Arial,sans-serif;
+    font-size:14px;
+  }
+  .modal-submit {
+    padding:10px 12px;
+    border-radius:8px;
+    border:0;
+    background:#ffd400;
+    font-weight:700;
+    cursor:pointer;
+    font-family:Helvetica,Arial,sans-serif;
+  }
+
+  .modal-close {
+    position:absolute;
+    right:12px;
+    top:12px;
+    z-index:5;
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    background:rgba(0,0,0,.45);
+    color:#fff;
+    border:0;
+    cursor:pointer;
+    font-size:20px;
+    line-height:1;
+  }
+
+  /* mobile art visible under 800px */
+  @media (max-width:800px){
+    .modal-art { display:none; }
+    .modal-art.mobile-only { display:block; width:100%; height:auto; }
+    .modal-heading { left:14px; top:12px; font-size:1.05rem; }
+    .modal-overlay { padding:12px; bottom:10px; }
+  }
+
 </style>
 </head>
 <body>
 
-<!-- PC scene (fixed to viewport) -->
+<!-- PC scene -->
 <section class="scene pc" aria-label="Desktop scene">
   <div class="lights" aria-hidden="true"></div>
 
@@ -154,7 +163,6 @@
   </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <!-- Updated: post page -->
     <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/pc/post.png" alt="Post"></a>
   </div>
 
@@ -179,7 +187,7 @@
   </div>
 </section>
 
-<!-- Mobile scene (fixed to viewport, shown only under 800px) -->
+<!-- Mobile scene -->
 <section class="scene mobile" aria-label="Mobile scene">
   <div class="lights" aria-hidden="true"></div>
 
@@ -188,7 +196,6 @@
   </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <!-- Updated: post page -->
     <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/mobile/post.png" alt="Post"></a>
   </div>
 
@@ -209,7 +216,7 @@
   </div>
 
   <div class="slot slot-7" data-slot="#download">
-    <a class="sticker" href="/ktm.pdf" download aria-label="Download"><img src="/mobile/download.png" alt="Download"></a>
+    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"><img src="/mobile/download.png" alt="Download"></a>
   </div>
 </section>
 
@@ -220,27 +227,33 @@
   <div class="footer-right"><a id="archive-link" href="/archive.html">Archive posts</a></div>
 </nav>
 
-<!-- Newsletter modal (custom) -->
-<!-- Uses /newsletter.png; close button; Helvetica for inputs -->
-<div id="newsletter-modal" aria-hidden="true" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
-  <div id="newsletter-sheet" style="position:relative;width:min(520px,92vw);border-radius:12px;overflow:hidden;">
-    <img src="/newsletter.png" alt="" style="width:100%;display:block;pointer-events:none;user-select:none;">
-    <button id="newsletter-close" aria-label="Close" style="position:absolute;right:12px;top:12px;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer">×</button>
-    <div style="position:absolute;left:0;right:0;bottom:12px;padding:12px 18px;display:flex;gap:8px;align-items:center;justify-content:center;">
+<!-- Newsletter modal (fixed) -->
+<div id="newsletter-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-sheet" role="document" aria-labelledby="newsletter-heading">
+    <!-- PC art -->
+    <img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />
+    <!-- Mobile art -->
+    <img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />
+
+    <!-- heading text overlay (Helvetica) -->
+    <div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
+
+    <!-- close button -->
+    <button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
+
+    <!-- input & submit overlayed at bottom -->
+    <div class="modal-overlay">
       <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
         <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
-        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email"
-               style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,.25);font-family:Helvetica,Arial,sans-serif;font-size:14px">
-        <button type="submit" style="padding:10px 12px;border-radius:8px;border:0;background:#ffd400;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif">Subscribe</button>
+        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
+        <button type="submit" class="modal-submit">Subscribe</button>
       </form>
     </div>
   </div>
 </div>
 
 <script>
-/* -------------------------------
-   Lights animation loader (unchanged)
-------------------------------- */
+/* Lights loader (unchanged) */
 (function(){
   const FRAME_COUNT = 16;
   const FPS = 12;
@@ -314,7 +327,7 @@
   initFor('mobile');
 })();
 
-/* Newsletter modal + fallback storage */
+/* Newsletter modal behavior + fallback */
 (function(){
   const modal = document.getElementById('newsletter-modal');
   const open = document.getElementById('newsletter-open');
@@ -322,14 +335,24 @@
   const form = document.getElementById('newsletter-form-inline');
   const input = document.getElementById('newsletter-email');
 
-  function showModal(){ modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); input.focus(); }
-  function hideModal(){ modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); }
+  function showModal(){
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    // focus input after a tiny delay so keyboard works on mobile
+    setTimeout(()=> input.focus(), 120);
+  }
+  function hideModal(){
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
 
-  open.addEventListener('click', e => { e.preventDefault(); showModal(); });
-  closeBtn.addEventListener('click', () => hideModal());
+  // Attach open/close handlers
+  if(open) open.addEventListener('click', e => { e.preventDefault(); showModal(); });
+  if(closeBtn) closeBtn.addEventListener('click', hideModal);
   modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
   addEventListener('keydown', e => { if(e.key === 'Escape') hideModal(); });
 
+  // Local storage fallback and server POST try
   const LOCAL_KEY = 'newsletter_emails_v1';
   function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
   function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
@@ -353,7 +376,7 @@
     const email = (input.value || '').trim().toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
 
-    // try server first
+    // try server
     const ok = await postToServer(email);
     if(ok){
       alert('Thanks — subscribed!');
@@ -362,18 +385,14 @@
       return;
     }
 
-    // fallback: localStorage + create downloadable signup.txt
+    // fallback local
     const list = loadList();
-    if(list.some(x => x.email === email)){
-      alert('You are already subscribed (local).');
-      return;
-    }
+    if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
     list.push({ email, ts: new Date().toISOString() });
     saveList(list);
-    alert('Subscribed (local). If you want to save server-side, run the server script provided.');
-    form.reset();
+    alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
 
-    // create a signup.txt download
+    // create signup.txt download
     const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
     const blob = new Blob([txt], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -384,20 +403,12 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+
+    hideModal();
+    form.reset();
   });
 
-  window.exportNewsletter = function(){
-    const list = loadList();
-    if(!list.length){ alert('No subscribers in localStorage.'); return; }
-    const csv = [['email','timestamp'], ...list.map(x=>[x.email,x.ts])].map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'}), url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'newsletter_emails.csv'; document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-  };
 })();
-
-/* Debug toggle: press "d" to show slot outlines */
-addEventListener('keydown', e => { if(e.key.toLowerCase() === 'd') document.body.classList.toggle('debug'); }, {passive:true});
 </script>
 </body>
 </html>
