@@ -6,8 +6,8 @@
 <title>Personal Site — Layered Scene (fixed, single-view)</title>
 <style>
   :root{
-    --overlay-opacity:2.0;
-    --overlay-blend:overlay;
+    --overlay-opacity: 0.6;     /* valid opacity */
+    --overlay-blend: overlay;
   }
 
   /* Basic reset */
@@ -21,20 +21,18 @@
     overflow:hidden; /* prevent page scrolling — scene is fixed to viewport */
   }
 
-  /* ---------- SCENE (fixed to viewport) ----------
-     Make scenes occupy the viewport and not participate in normal flow.
-     This prevents the PC and Mobile scenes from stacking vertically and creating scroll.
-  */
+  /* ---------- SCENE (fixed to viewport) ---------- */
   .scene {
-    position:fixed; /* IMPORTANT: fixed so it never contributes to page height */
-    inset:0;        /* top:0; right:0; bottom:0; left:0 */
-    width:100vw;
-    height:100vh;
-    min-height:100dvh;
+    position:fixed;
+    inset:0;
+    width:100%;     /* avoid 100vw overflow */
+    height:100%;
+    min-height:100vh; /* fallback */
     overflow:hidden;
     isolation:isolate;
     -webkit-backface-visibility:hidden;
     backface-visibility:hidden;
+    background-color:#000;
   }
 
   /* Background / overlay as pseudo-elements (true layers) */
@@ -44,8 +42,8 @@
     position:absolute;
     inset:0;
     background-repeat:no-repeat;
-    background-size:cover;
-    background-position:center;
+    background-size:cover;        /* ensure fill and avoid black bars */
+    background-position:center center;
     pointer-events:none;
   }
   .scene::before{ z-index:0; } /* background */
@@ -57,7 +55,7 @@
     z-index:1;
     background-repeat:no-repeat;
     background-position:center;
-    background-size:auto; /* native pixel size by default */
+    background-size:auto;
     pointer-events:none;
   }
 
@@ -67,12 +65,13 @@
     z-index:2; /* between lights and overlay */
     top:var(--t);
     left:var(--l);
-    /* width intentionally not set so images render at their intrinsic (100%) size */
   }
   .sticker img{
     display:block; width:auto; height:auto; max-width:none;
     -webkit-user-drag:none; user-drag:none;
     filter: drop-shadow(0 8px 20px rgba(0,0,0,.35));
+    max-width:14rem;      /* prevents oversized images causing overflow */
+    max-height:22rem;
   }
 
   /* ---------- Desktop (PC) scene: default visible on wide screens ---------- */
@@ -102,16 +101,13 @@
   .mobile .slot-6{ --t:18%; --l:70%; }
   .mobile .slot-7{ --t:18%; --l:78%; }
 
-  /* When viewport is narrow, hide PC scene and show mobile scene.
-     Because both scenes are fixed & positioned, they will not stack and won't cause scrolling.
-     Also ensure mobile background fits by width (no sidebars). */
   @media (max-width:800px){
     .pc{ display:none; }
     .mobile{ display:block; }
     .mobile::before,
     .mobile::after {
-      background-size:100% auto;     /* fit width exactly */
-      background-position:top center;/* crop top/bottom if needed */
+      background-size:cover;     /* use cover to avoid black bars */
+      background-position:top center;
     }
     .mobile .lights { background-size:auto; background-position:center; }
   }
@@ -129,18 +125,11 @@
   .footer-center{ justify-content:center; }
   .footer-right{ justify-content:flex-end; }
   .footer-nav a{
-    font-family:"Helvetica", Arial, sans-serif; /* your requested font */
+    font-family:"Helvetica", Arial, sans-serif;
     color:#fff; text-decoration:none; font-weight:600;
     text-shadow:0 3px 8px rgba(0,0,0,.6);
     pointer-events:auto;
   }
-
-  /* Modal (newsletter) */
-  dialog.modal{ position:fixed; inset:0; display:none; place-items:center; z-index:7; background:rgba(0,0,0,.45); }
-  dialog.modal[open]{ display:grid; }
-  .sheet{ background:rgba(18,18,18,.96); color:#fff; padding:18px; border-radius:14px; min-width:min(92vw,480px); }
-  .sheet input[type=email]{ width:100%; padding:10px; border-radius:10px; border:1px solid #333; background:#0f0f0f; color:#fff }
-  .sheet button{ padding:10px 14px; border-radius:10px; background:#ffd400; border:0; font-weight:700; cursor:pointer }
 
   /* Debug outlines */
   body.debug .slot{ outline:2px dashed rgba(255,255,255,.85) }
@@ -149,6 +138,9 @@
     position:absolute; top:-1rem; left:-1rem;
     background:#ff2;color:#111;border-radius:6px;padding:.25rem .35rem;font:600 12px/1.2 monospace;
   }
+
+  /* Newsletter custom modal styles (kept minimal here) */
+  #newsletter-modal{ display:none; position:fixed; inset:0; z-index:50; align-items:center; justify-content:center; }
 </style>
 </head>
 <body>
@@ -158,32 +150,27 @@
   <div class="lights" aria-hidden="true"></div>
 
   <div class="slot slot-1" data-slot="#1">
-    <!-- TODO: set href to FP target -->
     <a class="sticker" href="#" aria-label="FiradPatra"><img src="/pc/fp.png" alt="FiradPatra"></a>
   </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <!-- TODO: set href to post target -->
-    <a class="sticker" href="#" aria-label="Welcome/Post"><img src="/pc/post.png" alt="Post"></a>
+    <!-- Updated: post page -->
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/pc/post.png" alt="Post"></a>
   </div>
 
   <div class="slot slot-3" data-slot="#3">
-    <!-- TODO: set href to Kathmandu target -->
     <a class="sticker" href="#" aria-label="Kathmandu"><img src="/pc/ktm.png" alt="Kathmandu"></a>
   </div>
 
   <div class="slot slot-4" data-slot="#4">
-    <!-- TODO: set href to YouTube target -->
     <a class="sticker" href="#" aria-label="YouTube"><img src="/pc/yt.png" alt="YouTube"></a>
   </div>
 
   <div class="slot slot-5" data-slot="#5">
-    <!-- TODO: set href to px1rt target -->
     <a class="sticker" href="#" aria-label="Px1rt"><img src="/pc/px1rt.png" alt="Px1rt"></a>
   </div>
 
   <div class="slot slot-6" data-slot="#buy">
-    <!-- TODO: set href to buy target -->
     <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"><img src="/pc/buy.png" alt="Buy"></a>
   </div>
 
@@ -201,7 +188,8 @@
   </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <a class="sticker" href="#" aria-label="Welcome/Post"><img src="/mobile/post.png" alt="Post"></a>
+    <!-- Updated: post page -->
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/mobile/post.png" alt="Post"></a>
   </div>
 
   <div class="slot slot-3" data-slot="#3">
@@ -229,31 +217,29 @@
 <nav class="footer-nav" aria-label="Footer navigation">
   <div class="footer-left"><a id="resume-link" href="#">Resume</a></div>
   <div class="footer-center"><a id="newsletter-open" href="#newsletter">Signup for Newsletter</a></div>
-  <div class="footer-right"><a id="archive-link" href="#archive">Archive posts</a></div>
+  <div class="footer-right"><a id="archive-link" href="/archive.html">Archive posts</a></div>
 </nav>
 
-<!-- Newsletter modal -->
-<dialog class="modal" id="newsletter-modal" aria-labelledby="news-title">
-  <div class="sheet">
-    <h2 id="news-title">Join my newsletter</h2>
-    <form id="newsletter-form">
-      <label class="sr-only" for="email">Email</label>
-      <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" />
-      <div style="height:8px"></div>
-      <button type="submit">Subscribe</button>
-    </form>
-    <p id="newsletter-msg" role="status" aria-live="polite" style="margin-top:10px"></p>
-    <p style="opacity:.75;font-size:13px;margin-top:8px">No spam. I’ll only email when I publish new posts.</p>
+<!-- Newsletter modal (custom) -->
+<!-- Uses /newsletter.png; close button; Helvetica for inputs -->
+<div id="newsletter-modal" aria-hidden="true" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+  <div id="newsletter-sheet" style="position:relative;width:min(520px,92vw);border-radius:12px;overflow:hidden;">
+    <img src="/newsletter.png" alt="" style="width:100%;display:block;pointer-events:none;user-select:none;">
+    <button id="newsletter-close" aria-label="Close" style="position:absolute;right:12px;top:12px;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer">×</button>
+    <div style="position:absolute;left:0;right:0;bottom:12px;padding:12px 18px;display:flex;gap:8px;align-items:center;justify-content:center;">
+      <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
+        <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
+        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email"
+               style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,.25);font-family:Helvetica,Arial,sans-serif;font-size:14px">
+        <button type="submit" style="padding:10px 12px;border-radius:8px;border:0;background:#ffd400;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif">Subscribe</button>
+      </form>
+    </div>
   </div>
-</dialog>
+</div>
 
 <script>
 /* -------------------------------
-   Lights animation loader (GIF preferred; fallback to PNG sequence)
-   - Expect files:
-       /pc/lights.gif  (preferred) OR /pc/lights/lights0000.png ... lights0015.png
-       /mobile/lights.gif OR /mobile/lights/lights0000.png ... lights0015.png
-   - Frames are shown at native size (background-size:auto) so they render at 100% pixel size.
+   Lights animation loader (unchanged)
 ------------------------------- */
 (function(){
   const FRAME_COUNT = 16;
@@ -266,7 +252,7 @@
         const layer = sceneEl.querySelector('.lights');
         if(layer){
           layer.style.backgroundImage = `url("${gifPath}")`;
-          layer.style.backgroundSize = 'auto'; // show native gif pixels
+          layer.style.backgroundSize = 'auto';
         }
         return true;
       }
@@ -328,34 +314,78 @@
   initFor('mobile');
 })();
 
-/* Newsletter modal + local storage (keeps previous behavior until you connect a server) */
+/* Newsletter modal + fallback storage */
 (function(){
   const modal = document.getElementById('newsletter-modal');
   const open = document.getElementById('newsletter-open');
-  const form = document.getElementById('newsletter-form');
-  const msg = document.getElementById('newsletter-msg');
+  const closeBtn = document.getElementById('newsletter-close');
+  const form = document.getElementById('newsletter-form-inline');
+  const input = document.getElementById('newsletter-email');
 
-  open.addEventListener('click', e => { e.preventDefault(); modal.setAttribute('open',''); document.getElementById('email').focus(); });
-  modal.addEventListener('click', e => { if(e.target === modal) modal.removeAttribute('open'); });
-  addEventListener('keydown', e => { if(e.key === 'Escape') modal.removeAttribute('open'); });
+  function showModal(){ modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); input.focus(); }
+  function hideModal(){ modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); }
 
-  const KEY = 'newsletter_emails_v1';
-  function loadList(){ try{ return JSON.parse(localStorage.getItem(KEY) || '[]'); }catch{ return []; } }
-  function saveList(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+  open.addEventListener('click', e => { e.preventDefault(); showModal(); });
+  closeBtn.addEventListener('click', () => hideModal());
+  modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
+  addEventListener('keydown', e => { if(e.key === 'Escape') hideModal(); });
 
-  form.addEventListener('submit', e => {
+  const LOCAL_KEY = 'newsletter_emails_v1';
+  function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
+  function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+
+  async function postToServer(email){
+    try {
+      const r = await fetch('/api/signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email })
+      });
+      if(!r.ok) throw new Error('server failed');
+      return true;
+    } catch(e){
+      return false;
+    }
+  }
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const email = (new FormData(form).get('email') || '').toString().trim().toLowerCase();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = 'Please enter a valid email address.'; return; }
+    const email = (input.value || '').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
+
+    // try server first
+    const ok = await postToServer(email);
+    if(ok){
+      alert('Thanks — subscribed!');
+      hideModal();
+      form.reset();
+      return;
+    }
+
+    // fallback: localStorage + create downloadable signup.txt
     const list = loadList();
-    if(list.some(x=>x.email===email)){ msg.textContent = 'You are already subscribed.'; return; }
-    list.push({email, ts: new Date().toISOString()});
+    if(list.some(x => x.email === email)){
+      alert('You are already subscribed (local).');
+      return;
+    }
+    list.push({ email, ts: new Date().toISOString() });
     saveList(list);
-    msg.textContent = 'Subscribed (local test). Connect a service to collect emails centrally.';
+    alert('Subscribed (local). If you want to save server-side, run the server script provided.');
     form.reset();
+
+    // create a signup.txt download
+    const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'signup.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   });
 
-  // quick export helper for you (call exportNewsletter() in console)
   window.exportNewsletter = function(){
     const list = loadList();
     if(!list.length){ alert('No subscribers in localStorage.'); return; }
