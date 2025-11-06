@@ -6,18 +6,18 @@
 <title>Personal Site — Layered Scene (fixed, single-view)</title>
 <style>
   :root{
-  	--overlay-opacity: 0.6;
-  	--overlay-blend: overlay;
+    --overlay-opacity: 0.6;
+    --overlay-blend: overlay;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%; margin:0; padding:0}
   body{
-  	background:#000;
-  	font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  	-webkit-font-smoothing:antialiased;
-  	-moz-osx-font-smoothing:grayscale;
-  	overflow:hidden;
+    background:#000;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow:hidden;
   }
 
   /* Scene */
@@ -28,31 +28,37 @@
 
   .lights{ position:absolute; inset:0; z-index:1; background-repeat:no-repeat; background-position:center; background-size:auto; pointer-events:none; }
 
-  /* Updated .slot and .sticker for clickable greenscreens */
-  .slot{ position:absolute; z-index:2; }
-  .sticker{
-  	display:block;
-  	position:absolute; /* Make the anchor tag positioned */
-  	top:var(--t);
-  	left:var(--l);
-  	width:var(--w);
-  	height:var(--h);
-  	/* Optional: add a temporary background for easier positioning */
-  	/* background: rgba(0, 255, 0, 0.3); */
-  }
+  .slot{ position:absolute; z-index:2; top:var(--t); left:var(--l); }
+
+  /* --- CHANGED: Greenscreen Clickable Area --- */
+  .sticker { /* This is the <a> tag */
+    display: block;
+    /* These CSS variables (w, h) must be set in the inline style of the .slot div */
+    width: var(--w); 
+    height: var(--h);
+    /* DEBUG TIP: Uncomment the line below 
+      to see where your clickable areas are!
+    */
+    /* background: rgba(0, 255, 0, 0.3); */
+  }
+
+  .sticker img{ 
+    display: none; /* Hide the old img tag, since it's now part of your bg.png */
+  }
+  /* --- END CHANGE --- */
 
   .pc{ display:block; }
-  .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; } /* CHANGED BACK */
-  .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; } /* CHANGED BACK */
+  .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; }
+  .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; }
 
   .mobile{ display:none; }
-  .mobile::before{ background-image:url('/mobile/bg.png'); } /* CHANGED BACK */
-  .mobile::after { background-image:url('/mobile/overlay.png'); } /* CHANGED BACK */
+  .mobile::before{ background-image:url('/mobile/bg.png'); }
+  .mobile::after { background-image:url('/mobile/overlay.png'); }
 
   @media (max-width:800px){
-  	.pc{ display:none; } .mobile{ display:block; }
-  	.mobile::before, .mobile::after { background-size:cover; background-position:top center; }
-  	.mobile .lights { background-size:auto; background-position:center; }
+    .pc{ display:none; } .mobile{ display:block; }
+    .mobile::before, .mobile::after { background-size:cover; background-position:top center; }
+    .mobile .lights { background-size:auto; background-position:center; }
   }
 
   .footer-nav{ position:fixed; left:0; right:0; bottom:14px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; z-index:6; pointer-events:none; }
@@ -64,118 +70,105 @@
 
   /* --------- Newsletter modal styles (fixed) ---------- */
   .modal-backdrop {
-  	display:none;
-  	position:fixed;
-  	inset:0;
-  	z-index:9999;
-  	background:rgba(0,0,0,0.45);
-  	-webkit-backdrop-filter: blur(4px);
-  	backdrop-filter: blur(4px);
-  	align-items:center;
-  	justify-content:center;
-  	padding:20px;
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:rgba(0,0,0,0.45);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
   }
 
   .modal-sheet {
-  	position:relative;
-  	width: auto;
-  	max-width: none;
-  	height: auto;
-  	max-height: 82vh;
-  	border-radius:12px;
-  	overflow:hidden;
-  	box-shadow: 0 20px 60px rgba(0,0,0,.6);
-  	background: transparent;
+    position:relative;
+    /* --- CHANGED: Modal Background --- */
+    /* Removed width/max-width to let the image define the size */
+    /* width: min(720px, 94vw); */
+    /* max-width: 720px; */
+    width: auto; /* Added this */
+    max-height: 82vh;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    background: transparent; /* CHANGED from #111 */
+    /* --- END CHANGE --- */
   }
 
+  /* show pc image by default, hide mobile; swapped by media query */
   .modal-art { display:block; width:100%; height:auto; pointer-events:none; user-select:none; }
   .modal-art.mobile-only { display:none; }
 
+  /* overlay text area on top of image */
   .modal-overlay {
-  	position:absolute;
-  	left:0; right:0;
-  	bottom:12px;
-  	padding:18px;
-  	display:flex;
-  	gap:8px;
-  	align-items:center;
-  	justify-content:center;
-  	z-index:3;
-  	pointer-events:auto;
-  	width: 100%;
-  	box-sizing: border-box;
+    position:absolute;
+    left:0; right:0;
+    bottom:12px;
+    padding:18px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    justify-content:center;
+    z-index:3;
+    pointer-events:auto;
   }
 
   .modal-heading {
-  	position:absolute;
-  	left:20px;
-  	top:20px;
-  	z-index:4;
-  	font-family:Helvetica, Arial, sans-serif;
-  	font-weight:700;
-  	font-size:1.25rem;
-  	color:#fff;
-  	text-shadow:0 2px 6px rgba(0,0,0,.6);
-  	pointer-events:none;
-  	width: 100%;
-  	box-sizing: border-box;
-  	text-align: center;
+    position:absolute;
+    left:20px;
+    top:20px;
+    z-index:4;
+    font-family:Helvetica, Arial, sans-serif;
+    font-weight:700;
+    font-size:1.25rem;
+    color:#fff;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
+    pointer-events:none;
   }
 
   .modal-input {
-  	flex:1;
-  	padding:10px 12px;
-  	border-radius:8px;
-  	border:1px solid rgba(0,0,0,.25);
-  	font-family:Helvetica,Arial,sans-serif;
-  	font-size:14px;
+    flex:1;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid rgba(0,0,0,.25);
+    font-family:Helvetica,Arial,sans-serif;
+    font-size:14px;
   }
   .modal-submit {
-  	padding:10px 12px;
-  	border-radius:8px;
-  	border:0;
-  	background:#ffd400;
-  	font-weight:700;
-  	cursor:pointer;
-  	font-family:Helvetica,Arial,sans-serif;
+    padding:10px 12px;
+    border-radius:8px;
+    border:0;
+    background:#ffd400;
+    font-weight:700;
+    cursor:pointer;
+    font-family:Helvetica,Arial,sans-serif;
   }
 
   .modal-close {
-  	position:absolute;
-  	right:12px;
-  	top:12px;
-  	z-index:5;
-  	width:36px;
-  	height:36px;
-  	border-radius:999px;
-  	background:rgba(0,0,0,.45);
-  	color:#fff;
-  	border:0;
-  	cursor:pointer;
-  	font-size:20px;
-  	line-height:1;
+    position:absolute;
+    right:12px;
+    top:12px;
+    z-index:5;
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    background:rgba(0,0,0,.45);
+    color:#fff;
+    border:0;
+    cursor:pointer;
+    font-size:20px;
+    line-height:1;
   }
 
+  /* mobile art visible under 800px */
   @media (max-width:800px){
-  	.modal-art { display:none; }
-  	.modal-art.mobile-only { display:block; width:100%; height:auto; }
-  	.modal-heading { left:14px; top:12px; font-size:1.05rem; }
-  	.modal-overlay { padding:12px; bottom:10px; }
+    .modal-art { display:none; }
+    .modal-art.mobile-only { display:block; width:100%; height:auto; }
+    .modal-heading { left:14px; top:12px; font-size:1.05rem; }
+    .modal-overlay { padding:12px; bottom:10px; }
   }
-
-  /* Specific slot positioning for PC scene (adjust these values!) */
-  .pc .slot-1 .sticker { --t: 10%; --l: 12%; --w: 18%; --h: 12%; }
-  .pc .slot-2 .sticker { --t: 10%; --l: 30%; --w: 25%; --h: 12%; }
-  .pc .slot-3 .sticker { --t: 10%; --l: 58%; --w: 22%; --h: 12%; }
-  .pc .slot-4 .sticker { --t: 40%; --l: 12%; --w: 18%; --h: 20%; }
-  .pc .slot-5 .sticker { --t: 40%; --l: 60%; --w: 18%; --h: 20%; }
-
-  /* Specific slot positioning for Mobile scene (adjust these values!) */
-  .mobile .slot-1 .sticker { --t: 10%; --l: 10%; --w: 20%; --h: 10%; }
-  .mobile .slot-2 .sticker { --t: 10%; --l: 35%; --w: 30%; --h: 10%; }
-  .mobile .slot-3 .sticker { --t: 10%; --l: 70%; --w: 20%; --h: 10%; }
-  .mobile .slot-4 .sticker { --t: 40%; --l: 10%; --w: 20%; --h: 15%; }
-  .mobile .slot-5 .sticker { --t: 40%; --l: 70%; --w: 20%; --h: 15%; }
 
 </style>
 </head>
@@ -184,51 +177,64 @@
 <section class="scene pc" aria-label="Desktop scene">
   <div class="lights" aria-hidden="true"></div>
 
-  <div class="slot slot-1" data-slot="#1">
-  	<a class="sticker" href="#" aria-label="Link 1"></a> 
+    <div class="slot slot-1" data-slot="#1" style="--t: 20%; --l: 10%; --w: 15%; --h: 25%;">
+    <a class="sticker" href="#" aria-label="FiradPatra"></a>
   </div>
-  <div class="slot slot-2" data-slot="#2">
-  	<a class="sticker" href="/posts.html" aria-label="Link 2"></a> 
+
+    <div class="slot slot-2" data-slot="#2" style="--t: 10%; --l: 30%; --w: 40%; --h: 15%;">
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"></a>
   </div>
-  <div class="slot slot-3" data-slot="#3">
-  	<a class="sticker" href="#" aria-label="Link 3"></a> 
+
+    <div class="slot slot-3" data-slot="#3" style="--t: 20%; --l: 75%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="Kathmandu"></a>
   </div>
-  <div class="slot slot-4" data-slot="#4">
-  	<a class="sticker" href="#" aria-label="Link 4"></a> 
+
+    <div class="slot slot-4" data-slot="#4" style="--t: 40%; --l: 10%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="YouTube"></a>
   </div>
-  <div class="slot slot-5" data-slot="#5">
-  	<a class="sticker" href="#" aria-label="Link 5"></a> 
+
+    <div class="slot slot-5" data-slot="#5" style="--t: 40%; --l: 75%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="Px1rt"></a>
   </div>
-  <div class="slot slot-6" data-slot="#buy">
-  	<a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a> 
+
+    <div class="slot slot-6" data-slot="#buy" style="--t: 1%; --l: 1%; --w: 5%; --h: 5%;">
+    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
   </div>
-  <div class="slot slot-7" data-slot="#download">
-  	<a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a> 
+
+    <div class="slot slot-7" data-slot="#download" style="--t: 1%; --l: 10%; --w: 5%; --h: 5%;">
+    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
   </div>
 </section>
 
-<section class="scene mobile" aria-label="Mobile scene">   <div class="lights" aria-hidden="true"></div>
-  
-  <div class="slot slot-1" data-slot="#1">
-  	<a class="sticker" href="#" aria-label="Mobile Link 1"></a>
+<section class="scene mobile" aria-label="Mobile scene">
+  <div class="lights" aria-hidden="true"></div>
+
+    <div class="slot slot-1" data-slot="#1" style="--t: 20%; --l: 10%; --w: 15%; --h: 25%;">
+    <a class="sticker" href="#" aria-label="FiradPatra"></a>
   </div>
-  <div class="slot slot-2" data-slot="#2">
-  	<a class="sticker" href="/posts.html" aria-label="Mobile Link 2"></a>
+
+    <div class="slot slot-2" data-slot="#2" style="--t: 10%; --l: 30%; --w: 40%; --h: 15%;">
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"></a>
   </div>
-  <div class="slot slot-3" data-slot="#3">
-  	<a class="sticker" href="#" aria-label="Mobile Link 3"></a>
+
+    <div class="slot slot-3" data-slot="#3" style="--t: 20%; --l: 75%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="Kathmandu"></a>
   </div>
-  <div class="slot slot-4" data-slot="#4">
-  	<a class="sticker" href="#" aria-label="Mobile Link 4"></a>
+
+    <div class="slot slot-4" data-slot="#4" style="--t: 40%; --l: 10%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="YouTube"></a>
   </div>
-  <div class="slot slot-5" data-slot="#5">
-  	<a class="sticker" href="#" aria-label="Mobile Link 5"></a>
+
+    <div class="slot slot-5" data-slot="#5" style="--t: 40%; --l: 75%; --w: 15%; --h: 15%;">
+    <a class="sticker" href="#" aria-label="Px1rt"></a>
   </div>
-  <div class="slot slot-6" data-slot="#buy">
-  	<a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
+
+    <div class="slot slot-6" data-slot="#buy" style="--t: 1%; --l: 1%; --w: 5%; --h: 5%;">
+    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
   </div>
-  <div class="slot slot-7" data-slot="#download">
-  	<a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
+
+    <div class="slot slot-7" data-slot="#download" style="--t: 1%; --l: 10%; --w: 5%; --h: 5%;">
+    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
   </div>
 </section>
 
@@ -240,15 +246,20 @@
 
 <div id="newsletter-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="modal-sheet" role="document" aria-labelledby="newsletter-heading">
-  	  	<img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />   	  	<img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />   	  	<div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
-  	  	<button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
-  	  	<div class="modal-overlay">
-  	 	<form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
-  	 	 	<label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
-  	 	 	<input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
-  	 	 	<button type="submit" class="modal-submit">Subscribe</button>
-  	 	</form>
-  	</div>
+        <img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />
+        <img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />
+
+        <div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
+
+        <button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
+
+        <div class="modal-overlay">
+      <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
+        <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
+        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
+        <button type="submit" class="modal-submit">Subscribe</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -260,74 +271,74 @@
   const pad4 = n => String(n).padStart(4,'0');
 
   function tryUseGif(sceneEl, gifPath){
-  	return fetch(gifPath, { method: 'HEAD' }).then(res => {
-  	 	if(res.ok){
-  	 	 	const layer = sceneEl.querySelector('.lights');
-  	 	 	if(layer){
-  	 	 	 	layer.style.backgroundImage = \`url("${gifPath}")\`;
-  	 	 	 	layer.style.backgroundSize = 'auto';
-  	 	 	}
-  	 	 	return true;
-  	 	}
-  	 	return false;
-  	}).catch(()=> false);
+    return fetch(gifPath, { method: 'HEAD' }).then(res => {
+      if(res.ok){
+        const layer = sceneEl.querySelector('.lights');
+        if(layer){
+          layer.style.backgroundImage = `url("${gifPath}")`;
+          layer.style.backgroundSize = 'auto';
+        }
+        return true;
+      }
+      return false;
+    }).catch(()=> false);
   }
 
   function buildFrameList(baseDir){
-  	const list = [];
-  	for(let i=0;i<FRAME_COUNT;i++){
-  	 	list.push(\`${baseDir}/lights${pad4(i)}.png\`);
-  	}
-  	return list;
+    const list = [];
+    for(let i=0;i<FRAME_COUNT;i++){
+      list.push(`${baseDir}/lights${pad4(i)}.png`);
+    }
+    return list;
   }
 
   function preloadFrames(urls){
-  	return Promise.all(urls.map(u => new Promise(res=>{
-  	 	const img = new Image();
-  	 	img.onload = ()=>res({u, ok:true});
-  	 	img.onerror = ()=>res({u, ok:false});
-  	 	img.src = u + \`?v=1\`;
-  	})));
+    return Promise.all(urls.map(u => new Promise(res=>{
+      const img = new Image();
+      img.onload = ()=>res({u, ok:true});
+      img.onerror = ()=>res({u, ok:false});
+      img.src = u + `?v=1`;
+    })));
   }
 
   function startSequence(sceneEl, frames, fps){
-  	const layer = sceneEl.querySelector('.lights');
-  	if(!layer || !frames.length) return;
-  	let i = 0, last = 0, interval = 1000/Math.max(1,fps);
-  	function tick(ts){
-  	 	if(!last) last = ts;
-  	 	const dt = ts - last;
-  	 	if(dt >= interval){
-  	 	 	layer.style.backgroundImage = \`url("${frames[i]}")\`;
-  	 	 	i = (i + 1) % frames.length;
-  	 	 	last = ts;
-  	 	}
-  	 	requestAnimationFrame(tick);
-  	}
-  	requestAnimationFrame(tick);
+    const layer = sceneEl.querySelector('.lights');
+    if(!layer || !frames.length) return;
+    let i = 0, last = 0, interval = 1000/Math.max(1,fps);
+    function tick(ts){
+      if(!last) last = ts;
+      const dt = ts - last;
+      if(dt >= interval){
+        layer.style.backgroundImage = `url("${frames[i]}")`;
+        i = (i + 1) % frames.length;
+        last = ts;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   async function initFor(kind){
-  	const sceneEl = document.querySelector(\`.\${kind}\`);
-  	if(!sceneEl) return;
-  	const gifPath = \`/\${kind}/lights.gif\`; /* CHANGED BACK */
-  	const gifOk = await tryUseGif(sceneEl, gifPath);
-  	if(gifOk) return;
-  	const frames = buildFrameList(\`/\${kind}/lights\`); /* CHANGED BACK */
-  	const results = await preloadFrames(frames);
-  	const ok = results.filter(r=>r.ok).map(r=>r.u);
-  	if(ok.length) startSequence(sceneEl, ok, FPS);
-  	else {
-  	 	const layer = sceneEl.querySelector('.lights');
-  	 	if(layer) layer.style.display = 'none';
-s 	}
+    const sceneEl = document.querySelector(`.${kind}`);
+    if(!sceneEl) return;
+    const gifPath = `/${kind}/lights.gif`;
+    const gifOk = await tryUseGif(sceneEl, gifPath);
+    if(gifOk) return;
+    const frames = buildFrameList(`/${kind}/lights`);
+    const results = await preloadFrames(frames);
+    const ok = results.filter(r=>r.ok).map(r=>r.u);
+    if(ok.length) startSequence(sceneEl, ok, FPS);
+    else {
+      const layer = sceneEl.querySelector('.lights');
+      if(layer) layer.style.display = 'none';
+    }
   }
 
   initFor('pc');
   initFor('mobile');
 })();
 
-/* Newsletter modal behavior + fallback */
+/* Newsletter modal behavior + fallback (unchanged) */
 (function(){
   const modal = document.getElementById('newsletter-modal');
   const open = document.getElementById('newsletter-open');
@@ -336,13 +347,14 @@ s 	}
   const input = document.getElementById('newsletter-email');
 
   function showModal(){
-  	modal.style.display = 'flex';
-  	modal.setAttribute('aria-hidden','false');
-  	setTimeout(()=> input.focus(), 120);
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    // focus input after a tiny delay so keyboard works on mobile
+    setTimeout(()=> input.focus(), 120);
   }
   function hideModal(){
-  	modal.style.display = 'none';
-  	modal.setAttribute('aria-hidden','true');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
   }
 
   // Attach open/close handlers
@@ -357,54 +369,54 @@ s 	}
   function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
 
   async function postToServer(email){
-  	try {
-  	 	const r = await fetch('/api/signup', {
-  	 	 	method:'POST',
-  	 	 	headers:{'Content-Type':'application/json'},
-  	 	 	body: JSON.stringify({ email })
-  	 	});
-  	 	if(!r.ok) throw new Error('server failed');
-  	 	return true;
-  	} catch(e){
-  	 	return false;
-  	}
+    try {
+      const r = await fetch('/api/signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email })
+      });
+      if(!r.ok) throw new Error('server failed');
+      return true;
+  _ } catch(e){
+      return false;
+    }
   }
 
   form.addEventListener('submit', async e => {
-  	e.preventDefault();
-  	const email = (input.value || '').trim().toLowerCase();
-  	if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
+    e.preventDefault();
+    const email = (input.value || '').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
 
-  	// try server
-  	const ok = await postToServer(email);
-  	if(ok){
-  	 	alert('Thanks — subscribed!');
-  	 	hideModal();
-  	 	form.reset();
-  	 	return;
-  	}
+    // try server
+    const ok = await postToServer(email);
+    if(ok){
+      alert('Thanks — subscribed!');
+      hideModal();
+      form.reset();
+      return;
+    }
 
-  	// fallback local
-  	const list = loadList();
-  	if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
-  	list.push({ email, ts: new Date().toISOString() });
-  	saveList(list);
-  	alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
+    // fallback local
+    const list = loadList();
+    if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
+    list.push({ email, ts: new Date().toISOString() });
+    saveList(list);
+    alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
 
-  	// create signup.txt download
-  	const txt = list.map(x => \`\${x.email}\t\${x.ts}\`).join('\n');
-  	const blob = new Blob([txt], { type: 'text/plain' });
-  	const url = URL.createObjectURL(blob);
-  	const a = document.createElement('a');
-  	a.href = url;
-  	a.download = 'signup.txt';
-  	document.body.appendChild(a);
-a.click();
-  	a.remove();
-  	URL.revokeObjectURL(url);
+    // create signup.txt download
+    const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'signup.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 
-  	hideModal();
-  	form.reset();
+    hideModal();
+    form.reset();
   });
 
 })();
