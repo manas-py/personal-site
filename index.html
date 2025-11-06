@@ -6,18 +6,18 @@
 <title>Personal Site — Layered Scene (fixed, single-view)</title>
 <style>
   :root{
-    --overlay-opacity: 0.6;
-    --overlay-blend: overlay;
+  	--overlay-opacity: 0.6;
+  	--overlay-blend: overlay;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%; margin:0; padding:0}
   body{
-    background:#000;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
+  	background:#000;
+  	font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  	-webkit-font-smoothing:antialiased;
+  	-moz-osx-font-smoothing:grayscale;
+  	overflow:hidden;
   }
 
   /* Scene */
@@ -31,33 +31,28 @@
   /* Updated .slot and .sticker for clickable greenscreens */
   .slot{ position:absolute; z-index:2; }
   .sticker{
-    display:block;
-    position:absolute; /* Make the anchor tag positioned */
-    top:var(--t);
-    left:var(--l);
-    width:var(--w);
-    height:var(--h);
-    /* Optional: add a temporary background for easier positioning */
-    /* background: rgba(0, 255, 0, 0.3); */
+  	display:block;
+  	position:absolute; /* Make the anchor tag positioned */
+  	top:var(--t);
+  	left:var(--l);
+  	width:var(--w);
+  	height:var(--h);
+  	/* Optional: add a temporary background for easier positioning */
+  	/* background: rgba(0, 255, 0, 0.3); */
   }
 
-  /* Old sticker img styles are no longer needed if images are merged into bg.png */
-  /*
-  .sticker img{ display:block; width:auto; height:auto; -webkit-user-drag:none; user-drag:none; filter: drop-shadow(0 8px 20px rgba(0,0,0,.35)); max-width:14rem; max-height:22rem; }
-  */
-
   .pc{ display:block; }
-  .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; }
-  .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; }
+  .pc::before{ background-image:url('pc/bg.png'); background-position:center top -8%; } /* CHANGED */
+  .pc::after { background-image:url('pc/overlay.png'); background-position:center top -8%; } /* CHANGED */
 
   .mobile{ display:none; }
-  .mobile::before{ background-image:url('/mobile/bg.png'); }
-  .mobile::after { background-image:url('/mobile/overlay.png'); }
+  .mobile::before{ background-image:url('mobile/bg.png'); } /* CHANGED */
+  .mobile::after { background-image:url('mobile/overlay.png'); } /* CHANGED */
 
   @media (max-width:800px){
-    .pc{ display:none; } .mobile{ display:block; }
-    .mobile::before, .mobile::after { background-size:cover; background-position:top center; }
-    .mobile .lights { background-size:auto; background-position:center; }
+  	.pc{ display:none; } .mobile{ display:block; }
+  	.mobile::before, .mobile::after { background-size:cover; background-position:top center; }
+  	.mobile .lights { background-size:auto; background-position:center; }
   }
 
   .footer-nav{ position:fixed; left:0; right:0; bottom:14px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; z-index:6; pointer-events:none; }
@@ -69,29 +64,29 @@
 
   /* --------- Newsletter modal styles (fixed) ---------- */
   .modal-backdrop {
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:rgba(0,0,0,0.45);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+  	display:none;
+  	position:fixed;
+  	inset:0;
+  	z-index:9999;
+  	background:rgba(0,0,0,0.45);
+  	-webkit-backdrop-filter: blur(4px);
+  	backdrop-filter: blur(4px);
+  	align-items:center;
+  	justify-content:center;
+  	padding:20px;
   }
 
   .modal-sheet {
-    position:relative;
-    /* width and max-width should be controlled by newsletter.png dimensions */
-    width: auto;
-    max-width: none;
-    height: auto;
-    max-height: 82vh;
-    border-radius:12px; /* Keep if newsletter.png has rounded corners */
-    overflow:hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,.6);
-    background: transparent; /* Changed to transparent */
+  	position:relative;
+  	/* width and max-width should be controlled by newsletter.png dimensions */
+  	width: auto;
+  	max-width: none;
+  	height: auto;
+  	max-height: 82vh;
+  	border-radius:12px; /* Keep if newsletter.png has rounded corners */
+  	overflow:hidden;
+  	box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  	background: transparent; /* Changed to transparent */
   }
 
   /* show pc image by default, hide mobile; swapped by media query */
@@ -100,76 +95,76 @@
 
   /* overlay text area on top of image */
   .modal-overlay {
-    position:absolute;
-    left:0; right:0;
-    bottom:12px; /* Adjust this to sit on your newsletter.png */
-    padding:18px; /* Adjust this */
-    display:flex;
-    gap:8px;
-    align-items:center;
-    justify-content:center;
-    z-index:3;
-    pointer-events:auto;
-    width: 100%; /* Ensure it spans the full width of the modal-art */
-    box-sizing: border-box; /* Include padding in width */
+  	position:absolute;
+  	left:0; right:0;
+  	bottom:12px; /* Adjust this to sit on your newsletter.png */
+  	padding:18px; /* Adjust this */
+  	display:flex;
+  	gap:8px;
+  	align-items:center;
+  	justify-content:center;
+  	z-index:3;
+  	pointer-events:auto;
+  	width: 100%; /* Ensure it spans the full width of the modal-art */
+  	box-sizing: border-box; /* Include padding in width */
   }
 
   .modal-heading {
-    position:absolute;
-    left:20px; /* Adjust this to sit on your newsletter.png */
-    top:20px; /* Adjust this to sit on your newsletter.png */
-    z-index:4;
-    font-family:Helvetica, Arial, sans-serif;
-    font-weight:700;
-    font-size:1.25rem;
-    color:#fff;
-    text-shadow:0 2px 6px rgba(0,0,0,.6);
-    pointer-events:none;
-    width: 100%; /* Ensure it spans the full width of the modal-art */
-    box-sizing: border-box; /* Include padding in width */
-    text-align: center; /* Center the text if needed */
+  	position:absolute;
+  	left:20px; /* Adjust this to sit on your newsletter.png */
+  	top:20px; /* Adjust this to sit on your newsletter.png */
+  	z-index:4;
+  	font-family:Helvetica, Arial, sans-serif;
+  	font-weight:700;
+  	font-size:1.25rem;
+  	color:#fff;
+  	text-shadow:0 2px 6px rgba(0,0,0,.6);
+  	pointer-events:none;
+  	width: 100%; /* Ensure it spans the full width of the modal-art */
+  	box-sizing: border-box; /* Include padding in width */
+  	text-align: center; /* Center the text if needed */
   }
 
   .modal-input {
-    flex:1;
-    padding:10px 12px;
-    border-radius:8px;
-    border:1px solid rgba(0,0,0,.25);
-    font-family:Helvetica,Arial,sans-serif;
-    font-size:14px;
+  	flex:1;
+  	padding:10px 12px;
+  	border-radius:8px;
+  	border:1px solid rgba(0,0,0,.25);
+  	font-family:Helvetica,Arial,sans-serif;
+  	font-size:14px;
   }
   .modal-submit {
-    padding:10px 12px;
-    border-radius:8px;
-    border:0;
-    background:#ffd400;
-    font-weight:700;
-    cursor:pointer;
-    font-family:Helvetica,Arial,sans-serif;
+  	padding:10px 12px;
+  	border-radius:8px;
+  	border:0;
+  	background:#ffd400;
+  	font-weight:700;
+  	cursor:pointer;
+  	font-family:Helvetica,Arial,sans-serif;
   }
 
   .modal-close {
-    position:absolute;
-    right:12px; /* Adjust this to sit on your newsletter.png */
-    top:12px; /* Adjust this to sit on your newsletter.png */
-    z-index:5;
-    width:36px;
-    height:36px;
-    border-radius:999px;
-    background:rgba(0,0,0,.45);
-    color:#fff;
-    border:0;
-    cursor:pointer;
-    font-size:20px;
-    line-height:1;
+  	position:absolute;
+  	right:12px; /* Adjust this to sit on your newsletter.png */
+  	top:12px; /* Adjust this to sit on your newsletter.png */
+  	z-index:5;
+  	width:36px;
+  	height:36px;
+  	border-radius:999px;
+  	background:rgba(0,0,0,.45);
+  	color:#fff;
+  	border:0;
+  	cursor:pointer;
+  	font-size:20px;
+  	line-height:1;
   }
 
   /* mobile art visible under 800px */
   @media (max-width:800px){
-    .modal-art { display:none; }
-    .modal-art.mobile-only { display:block; width:100%; height:auto; }
-    .modal-heading { left:14px; top:12px; font-size:1.05rem; } /* Adjust these */
-    .modal-overlay { padding:12px; bottom:10px; } /* Adjust these */
+  	.modal-art { display:none; }
+  	.modal-art.mobile-only { display:block; width:100%; height:auto; }
+  	.modal-heading { left:14px; top:12px; font-size:1.05rem; } /* Adjust these */
+  	.modal-overlay { padding:12px; bottom:10px; } /* Adjust these */
   }
 
   /* Specific slot positioning for PC scene (adjust these values!) */
@@ -184,7 +179,7 @@
   .mobile .slot-1 .sticker { --t: 10%; --l: 10%; --w: 20%; --h: 10%; } /* Example mobile positioning */
   .mobile .slot-2 .sticker { --t: 10%; --l: 35%; --w: 30%; --h: 10%; }
   .mobile .slot-3 .sticker { --t: 10%; --l: 70%; --w: 20%; --h: 10%; }
-  .mobile .slot-4 .sticker { --t: 40%; --l: 10%; --w: 20%; --h: 15%; }
+section .mobile .slot-4 .sticker { --t: 40%; --l: 10%; --w: 20%; --h: 15%; }
   .mobile .slot-5 .sticker { --t: 40%; --l: 70%; --w: 20%; --h: 15%; }
 
 </style>
@@ -194,57 +189,66 @@
 <section class="scene pc" aria-label="Desktop scene">
   <div class="lights" aria-hidden="true"></div>
 
-    <div class="slot slot-1" data-slot="#1">
-    <a class="sticker" href="#" aria-label="Link 1"></a>   </div>
+  
+  <div class="slot slot-1" data-slot="#1">
+  	<a class="sticker" href="#" aria-label="Link 1"></a> 
+  </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <a class="sticker" href="/posts.html" aria-label="Link 2"></a>   </div>
+  	<a class="sticker" href="/posts.html" aria-label="Link 2"></a> 
+  </div>
 
   <div class="slot slot-3" data-slot="#3">
-    <a class="sticker" href="#" aria-label="Link 3"></a>   </div>
+  	<a class="sticker" href="#" aria-label="Link 3"></a> 
+  </div>
 
   <div class="slot slot-4" data-slot="#4">
-    <a class="sticker" href="#" aria-label="Link 4"></a>   </div>
+  	<a class="sticker" href="#" aria-label="Link 4"></a> 
+  </div>
 
   <div class="slot slot-5" data-slot="#5">
-    <a class="sticker" href="#" aria-label="Link 5"></a>   </div>
+  	<a class="sticker" href="#" aria-label="Link 5"></a> 
+  </div>
 
   <div class="slot slot-6" data-slot="#buy">
-    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>   </div>
+  	<a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a> 
+  </div>
 
   <div class="slot slot-7" data-slot="#download">
-    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>   </div>
+  	<a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a> 
+  </div>
 </section>
 
-<section class="scene mobile" aria-label="Mobile scene">
+<section classs="scene mobile" aria-label="Mobile scene">
   <div class="lights" aria-hidden="true"></div>
 
-    <div class="slot slot-1" data-slot="#1">
-    <a class="sticker" href="#" aria-label="Mobile Link 1"></a>
+  
+  <div class="slot slot-1" data-slot="#1">
+  	<a class="sticker" href="#" aria-label="Mobile Link 1"></a>
   </div>
 
   <div class="slot slot-2" data-slot="#2">
-    <a class="sticker" href="/posts.html" aria-label="Mobile Link 2"></a>
+  	<a class="sticker" href="/posts.html" aria-label="Mobile Link 2"></a>
   </div>
 
   <div class="slot slot-3" data-slot="#3">
-    <a class="sticker" href="#" aria-label="Mobile Link 3"></a>
+  	<a class="sticker" href="#" aria-label="Mobile Link 3"></a>
   </div>
 
   <div class="slot slot-4" data-slot="#4">
-    <a class="sticker" href="#" aria-label="Mobile Link 4"></a>
+  	<a class="sticker" href="#" aria-label="Mobile Link 4"></a>
   </div>
 
   <div class="slot slot-5" data-slot="#5">
-    <a class="sticker" href="#" aria-label="Mobile Link 5"></a>
+  	<a class="sticker" href="#" aria-label="Mobile Link 5"></a>
   </div>
 
   <div class="slot slot-6" data-slot="#buy">
-    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
+  	<a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
   </div>
 
   <div class="slot slot-7" data-slot="#download">
-    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
+  	<a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
   </div>
 </section>
 
@@ -256,20 +260,17 @@
 
 <div id="newsletter-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="modal-sheet" role="document" aria-labelledby="newsletter-heading">
-        <img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />
-        <img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />
+  	  	<img src="pc/newsletter.png" alt="" class="modal-art pc-only" />   	  	<img src="mobile/newsletter.png" alt="" class="modal-art mobile-only" />   	  	<div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
 
-        <div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
+  	  	<button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
 
-        <button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
-
-        <div class="modal-overlay">
-      <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
-        <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
-        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
-        <button type="submit" class="modal-submit">Subscribe</button>
-      </form>
-    </div>
+  	  	<div class="modal-overlay">
+  	 	<form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
+  	 	 	<label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
+  	 	 	<input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
+  	 	 	<button type="submit" class="modal-submit">Subscribe</button>
+  	 	</form>
+  	</div>
   </div>
 </div>
 
@@ -281,67 +282,67 @@
   const pad4 = n => String(n).padStart(4,'0');
 
   function tryUseGif(sceneEl, gifPath){
-    return fetch(gifPath, { method: 'HEAD' }).then(res => {
-      if(res.ok){
-        const layer = sceneEl.querySelector('.lights');
-        if(layer){
-          layer.style.backgroundImage = `url("${gifPath}")`;
-          layer.style.backgroundSize = 'auto';
-        }
-        return true;
-      }
-      return false;
-    }).catch(()=> false);
+  	return fetch(gifPath, { method: 'HEAD' }).then(res => {
+  	 	if(res.ok){
+  	 	 	const layer = sceneEl.querySelector('.lights');
+  	 	 	if(layer){
+  	 	 	 	layer.style.backgroundImage = \`url("${gifPath}")\`;
+  	 	 	 	layer.style.backgroundSize = 'auto';
+  	 	 	}
+  	 	 	return true;
+  	 	}
+  	 	return false;
+  	}).catch(()=> false);
   }
 
   function buildFrameList(baseDir){
-    const list = [];
-    for(let i=0;i<FRAME_COUNT;i++){
-      list.push(`${baseDir}/lights${pad4(i)}.png`);
-    }
-    return list;
+  	const list = [];
+  	for(let i=0;i<FRAME_COUNT;i++){
+  	 	list.push(\`${baseDir}/lights${pad4(i)}.png\`);
+  	}
+  	return list;
   }
 
   function preloadFrames(urls){
-    return Promise.all(urls.map(u => new Promise(res=>{
-      const img = new Image();
-      img.onload = ()=>res({u, ok:true});
-      img.onerror = ()=>res({u, ok:false});
-      img.src = u + `?v=1`;
-    })));
+  	return Promise.all(urls.map(u => new Promise(res=>{
+  	 	const img = new Image();
+  	 	img.onload = ()=>res({u, ok:true});
+  	 	img.onerror = ()=>res({u, ok:false});
+  	 	img.src = u + \`?v=1\`;
+  	})));
   }
 
   function startSequence(sceneEl, frames, fps){
-    const layer = sceneEl.querySelector('.lights');
-    if(!layer || !frames.length) return;
-    let i = 0, last = 0, interval = 1000/Math.max(1,fps);
-    function tick(ts){
-      if(!last) last = ts;
-      const dt = ts - last;
-      if(dt >= interval){
-        layer.style.backgroundImage = `url("${frames[i]}")`;
-        i = (i + 1) % frames.length;
-        last = ts;
-      }
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+  	const layer = sceneEl.querySelector('.lights');
+  	if(!layer || !frames.length) return;
+  	let i = 0, last = 0, interval = 1000/Math.max(1,fps);
+  	function tick(ts){
+  	 	if(!last) last = ts;
+  	 	const dt = ts - last;
+  	 	if(dt >= interval){
+  	 	 	layer.style.backgroundImage = \`url("${frames[i]}")\`;
+  	 	 	i = (i + 1) % frames.length;
+  	 	 	last = ts;
+  	 	}
+  	 	requestAnimationFrame(tick);
+  	}
+  	requestAnimationFrame(tick);
   }
 
   async function initFor(kind){
-    const sceneEl = document.querySelector(`.${kind}`);
-    if(!sceneEl) return;
-    const gifPath = `/${kind}/lights.gif`;
-    const gifOk = await tryUseGif(sceneEl, gifPath);
-    if(gifOk) return;
-    const frames = buildFrameList(`/${kind}/lights`);
-    const results = await preloadFrames(frames);
-    const ok = results.filter(r=>r.ok).map(r=>r.u);
-    if(ok.length) startSequence(sceneEl, ok, FPS);
-    else {
-      const layer = sceneEl.querySelector('.lights');
-      if(layer) layer.style.display = 'none';
-    }
+  	const sceneEl = document.querySelector(\`.\${kind}\`);
+  	if(!sceneEl) return;
+  	const gifPath = \`\${kind}/lights.gif\`; /* CHANGED */
+  	const gifOk = await tryUseGif(sceneEl, gifPath);
+  	if(gifOk) return;
+  	const frames = buildFrameList(\`\${kind}/lights\`); /* CHANGED */
+  	const results = await preloadFrames(frames);
+  	const ok = results.filter(r=>r.ok).map(r=>r.u);
+  	if(ok.length) startSequence(sceneEl, ok, FPS);
+  	else {
+  	 	const layer = sceneEl.querySelector('.lights');
+  	 	if(layer) layer.style.display = 'none';
+  	}
   }
 
   initFor('pc');
@@ -353,18 +354,18 @@
   const modal = document.getElementById('newsletter-modal');
   const open = document.getElementById('newsletter-open');
   const closeBtn = document.getElementById('newsletter-close');
-  const form = document.getElementById('newsletter-form-inline');
+s const form = document.getElementById('newsletter-form-inline');
   const input = document.getElementById('newsletter-email');
 
   function showModal(){
-    modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden','false');
-    // focus input after a tiny delay so keyboard works on mobile
-    setTimeout(()=> input.focus(), 120);
+  	modal.style.display = 'flex';
+  	modal.setAttribute('aria-hidden','false');
+  	// focus input after a tiny delay so keyboard works on mobile
+  	setTimeout(()=> input.focus(), 120);
   }
-  function hideModal(){
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden','true');
+s function hideModal(){
+  	modal.style.display = 'none';
+  	modal.setAttribute('aria-hidden','true');
   }
 
   // Attach open/close handlers
@@ -376,57 +377,57 @@
   // Local storage fallback and server POST try
   const LOCAL_KEY = 'newsletter_emails_v1';
   function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
-  function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+s function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
 
   async function postToServer(email){
-    try {
-      const r = await fetch('/api/signup', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ email })
-      });
-      if(!r.ok) throw new Error('server failed');
-      return true;
-    } catch(e){
-      return false;
-    }
+  	try {
+  	 	const r = await fetch('/api/signup', { /* This will still fail on file://, but that's ok */
+  	 	 	method:'POST',
+  	 	 	headers:{'Content-Type':'application/json'},
+  	 	 	body: JSON.stringify({ email })
+  	 	});
+  	 	if(!r.ok) throw new Error('server failed');
+  	 	return true;
+  	} catch(e){
+  	 	return false;
+  	}
   }
 
   form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const email = (input.value || '').trim().toLowerCase();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
+  	e.preventDefault();
+  	const email = (input.value || '').trim().toLowerCase();
+  	if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
 
-    // try server
-    const ok = await postToServer(email);
-    if(ok){
-      alert('Thanks — subscribed!');
-      hideModal();
-      form.reset();
-      return;
-    }
+  	// try server
+  	const ok = await postToServer(email);
+  	if(ok){
+  	 	alert('Thanks — subscribed!');
+  	 	hideModal();
+  	 	form.reset();
+  	 	return;
+  	}
 
-    // fallback local
-    const list = loadList();
-    if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
-    list.push({ email, ts: new Date().toISOString() });
-    saveList(list);
-    alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
+  	// fallback local
+  	const list = loadList();
+  	if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
+  	list.push({ email, ts: new Date().toISOString() });
+  	saveList(list);
+  	alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
 
-    // create signup.txt download
-    const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
-    const blob = new Blob([txt], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'signup.txt';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+section 	// create signup.txt download
+  	const txt = list.map(x => \`\${x.email}\t\${x.ts}\`).join('\n');
+  	const blob = new Blob([txt], { type: 'text/plain' });
+  	const url = URL.createObjectURL(blob);
+  	const a = document.createElement('a');
+  	a.href = url;
+  	a.download = 'signup.txt';
+  	document.body.appendChild(a);
+  	a.click();
+  	a.remove();
+  	URL.revokeObjectURL(url);
 
-    hideModal();
-    form.reset();
+  	hideModal();
+  	form.reset();
   });
 
 })();
