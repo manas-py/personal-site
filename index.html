@@ -5,419 +5,408 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Personal Site — Layered Scene (fixed, single-view)</title>
 <style>
-  :root{
-    --overlay-opacity: 0.6;
-    --overlay-blend: overlay;
-  }
-
-  *{box-sizing:border-box}
-  html,body{height:100%; margin:0; padding:0}
-  body{
-    background:#000;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-  }
-
-  /* Scene */
-  .scene{ position:fixed; inset:0; width:100%; height:100%; min-height:100vh; overflow:hidden; isolation:isolate; background-color:#000; }
-  .scene::before, .scene::after{ content:""; position:absolute; inset:0; background-repeat:no-repeat; background-size:cover; background-position:center center; pointer-events:none; }
-  .scene::before{ z-index:0; }
-  .scene::after{ z-index:3; mix-blend-mode:var(--overlay-blend); opacity:var(--overlay-opacity); pointer-events:none; }
-
-  .lights{ position:absolute; inset:0; z-index:1; background-repeat:no-repeat; background-position:center; background-size:auto; pointer-events:none; }
-
-  .slot{ position:absolute; z-index:2; top:var(--t); left:var(--l); }
-
-  /* --- CHANGED: Greenscreen Clickable Area --- */
-  .sticker { /* This is the <a> tag */
-    display: block;
-    /* These CSS variables (w, h) must be set in the inline style of the .slot div */
-    width: var(--w); 
-    height: var(--h);
-    /* DEBUG TIP: Uncomment the line below 
-      to see where your clickable areas are!
-    */
-    /* background: rgba(0, 255, 0, 0.3); */
+  :root{
+    --overlay-opacity: 0.6;
+    --overlay-blend: overlay;
   }
 
-  .sticker img{ 
-    display: none; /* Hide the old img tag, since it's now part of your bg.png */
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0; padding:0}
+  body{
+    background:#000;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow:hidden;
   }
-  /* --- END CHANGE --- */
 
-  .pc{ display:block; }
-  .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; }
-  .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; }
+  /* Scene */
+  .scene{ position:fixed; inset:0; width:100%; height:100%; min-height:100vh; overflow:hidden; isolation:isolate; background-color:#000; }
+  .scene::before, .scene::after{ content:""; position:absolute; inset:0; background-repeat:no-repeat; background-size:cover; background-position:center center; pointer-events:none; }
+  .scene::before{ z-index:0; }
+  .scene::after{ z-index:3; mix-blend-mode:var(--overlay-blend); opacity:var(--overlay-opacity); pointer-events:none; }
 
-  .mobile{ display:none; }
-  .mobile::before{ background-image:url('/mobile/bg.png'); }
-  .mobile::after { background-image:url('/mobile/overlay.png'); }
+  .lights{ position:absolute; inset:0; z-index:1; background-repeat:no-repeat; background-position:center; background-size:auto; pointer-events:none; }
 
-  @media (max-width:800px){
-    .pc{ display:none; } .mobile{ display:block; }
-    .mobile::before, .mobile::after { background-size:cover; background-position:top center; }
-    .mobile .lights { background-size:auto; background-position:center; }
-  }
+  .slot{ position:absolute; z-index:2; top:var(--t); left:var(--l); }
+  .sticker img{ display:block; width:auto; height:auto; -webkit-user-drag:none; user-drag:none; filter: drop-shadow(0 8px 20px rgba(0,0,0,.35)); max-width:14rem; max-height:22rem; }
 
-  .footer-nav{ position:fixed; left:0; right:0; bottom:14px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; z-index:6; pointer-events:none; }
-  .footer-left, .footer-center, .footer-right{ width:33%; display:flex; align-items:center; pointer-events:auto; }
-  .footer-left{ justify-content:flex-start; } .footer-center{ justify-content:center; } .footer-right{ justify-content:flex-end; }
-  .footer-nav a{ font-family:"Helvetica", Arial, sans-serif; color:#fff; text-decoration:none; font-weight:600; text-shadow:0 3px 8px rgba(0,0,0,.6); pointer-events:auto; }
+  .pc{ display:block; }
+  .pc::before{ background-image:url('/pc/bg.png'); background-position:center top -8%; }
+  .pc::after { background-image:url('/pc/overlay.png'); background-position:center top -8%; }
 
-  body.debug .slot{ outline:2px dashed rgba(255,255,255,.85) }
+  .mobile{ display:none; }
+  .mobile::before{ background-image:url('/mobile/bg.png'); }
+  .mobile::after { background-image:url('/mobile/overlay.png'); }
 
-  /* --------- Newsletter modal styles (fixed) ---------- */
-  .modal-backdrop {
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:rgba(0,0,0,0.45);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-  }
+  @media (max-width:800px){
+    .pc{ display:none; } .mobile{ display:block; }
+    .mobile::before, .mobile::after { background-size:cover; background-position:top center; }
+    .mobile .lights { background-size:auto; background-position:center; }
+  }
 
-  .modal-sheet {
-    position:relative;
-    /* --- CHANGED: Modal Background --- */
-    /* Removed width/max-width to let the image define the size */
-    /* width: min(720px, 94vw); */
-    /* max-width: 720px; */
-    width: auto; /* Added this */
-    max-height: 82vh;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,.6);
-    background: transparent; /* CHANGED from #111 */
-    /* --- END CHANGE --- */
-  }
+  .footer-nav{ position:fixed; left:0; right:0; bottom:14px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; z-index:6; pointer-events:none; }
+  .footer-left, .footer-center, .footer-right{ width:33%; display:flex; align-items:center; pointer-events:auto; }
+  .footer-left{ justify-content:flex-start; } .footer-center{ justify-content:center; } .footer-right{ justify-content:flex-end; }
+  .footer-nav a{ font-family:"Helvetica", Arial, sans-serif; color:#fff; text-decoration:none; font-weight:600; text-shadow:0 3px 8px rgba(0,0,0,.6); pointer-events:auto; }
 
-  /* show pc image by default, hide mobile; swapped by media query */
-  .modal-art { display:block; width:100%; height:auto; pointer-events:none; user-select:none; }
-  .modal-art.mobile-only { display:none; }
+  body.debug .slot{ outline:2px dashed rgba(255,255,255,.85) }
 
-  /* overlay text area on top of image */
-  .modal-overlay {
-    position:absolute;
-    left:0; right:0;
-    bottom:12px;
-    padding:18px;
-    display:flex;
-    gap:8px;
-    align-items:center;
-    justify-content:center;
-    z-index:3;
-    pointer-events:auto;
-  }
+  /* --------- Newsletter modal styles (fixed) ---------- */
+  .modal-backdrop {
+    display:none;                /* show via JS (set to flex) */
+    position:fixed;
+    inset:0;
+    z-index:9999;               /* high above everything */
+    background:rgba(0,0,0,0.45);/* dim the scene */
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
 
-  .modal-heading {
-    position:absolute;
-    left:20px;
-    top:20px;
-    z-index:4;
-    font-family:Helvetica, Arial, sans-serif;
-    font-weight:700;
-    font-size:1.25rem;
-    color:#fff;
-    text-shadow:0 2px 6px rgba(0,0,0,.6);
-    pointer-events:none;
-  }
+  .modal-sheet {
+    position:relative;
+    width: min(720px, 94vw);
+    max-width: 720px;
+    max-height: 82vh;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    background: #111; /* fallback behind images */
+  }
 
-  .modal-input {
-    flex:1;
-    padding:10px 12px;
-    border-radius:8px;
-    border:1px solid rgba(0,0,0,.25);
-    font-family:Helvetica,Arial,sans-serif;
-    font-size:14px;
-  }
-  .modal-submit {
-    padding:10px 12px;
-    border-radius:8px;
-    border:0;
-    background:#ffd400;
-    font-weight:700;
-    cursor:pointer;
-    font-family:Helvetica,Arial,sans-serif;
-  }
+  /* show pc image by default, hide mobile; swapped by media query */
+  .modal-art { display:block; width:100%; height:auto; pointer-events:none; user-select:none; }
+  .modal-art.mobile-only { display:none; }
 
-  .modal-close {
-    position:absolute;
-    right:12px;
-    top:12px;
-    z-index:5;
-    width:36px;
-    height:36px;
-    border-radius:999px;
-    background:rgba(0,0,0,.45);
-    color:#fff;
-    border:0;
-    cursor:pointer;
-    font-size:20px;
-    line-height:1;
-  }
+  /* overlay text area on top of image */
+  .modal-overlay {
+    position:absolute;
+    left:0; right:0;
+    bottom:12px;
+    padding:18px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    justify-content:center;
+    z-index:3;
+    pointer-events:auto;
+  }
 
-  /* mobile art visible under 800px */
-  @media (max-width:800px){
-    .modal-art { display:none; }
-    .modal-art.mobile-only { display:block; width:100%; height:auto; }
-    .modal-heading { left:14px; top:12px; font-size:1.05rem; }
-    .modal-overlay { padding:12px; bottom:10px; }
-  }
+  .modal-heading {
+    position:absolute;
+    left:20px;
+    top:20px;
+    z-index:4;
+    font-family:Helvetica, Arial, sans-serif;
+    font-weight:700;
+    font-size:1.25rem;
+    color:#fff;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
+    pointer-events:none;
+  }
+
+  .modal-input {
+    flex:1;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid rgba(0,0,0,.25);
+    font-family:Helvetica,Arial,sans-serif;
+    font-size:14px;
+  }
+  .modal-submit {
+    padding:10px 12px;
+    border-radius:8px;
+    border:0;
+    background:#ffd400;
+    font-weight:700;
+    cursor:pointer;
+    font-family:Helvetica,Arial,sans-serif;
+  }
+
+  .modal-close {
+    position:absolute;
+    right:12px;
+    top:12px;
+    z-index:5;
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    background:rgba(0,0,0,.45);
+    color:#fff;
+    border:0;
+    cursor:pointer;
+    font-size:20px;
+    line-height:1;
+  }
+
+  /* mobile art visible under 800px */
+  @media (max-width:800px){
+    .modal-art { display:none; }
+    .modal-art.mobile-only { display:block; width:100%; height:auto; }
+    .modal-heading { left:14px; top:12px; font-size:1.05rem; }
+    .modal-overlay { padding:12px; bottom:10px; }
+  }
 
 </style>
 </head>
 <body>
 
+<!-- PC scene -->
 <section class="scene pc" aria-label="Desktop scene">
-  <div class="lights" aria-hidden="true"></div>
+  <div class="lights" aria-hidden="true"></div>
 
-    <div class="slot slot-1" data-slot="#1" style="--t: 20%; --l: 10%; --w: 15%; --h: 25%;">
-    <a class="sticker" href="#" aria-label="FiradPatra"></a>
-  </div>
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="FiradPatra"><img src="/pc/fp.png" alt="FiradPatra"></a>
+  </div>
 
-    <div class="slot slot-2" data-slot="#2" style="--t: 10%; --l: 30%; --w: 40%; --h: 15%;">
-    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"></a>
-  </div>
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/pc/post.png" alt="Post"></a>
+  </div>
 
-    <div class="slot slot-3" data-slot="#3" style="--t: 20%; --l: 75%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="Kathmandu"></a>
-  </div>
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Kathmandu"><img src="/pc/ktm.png" alt="Kathmandu"></a>
+  </div>
 
-    <div class="slot slot-4" data-slot="#4" style="--t: 40%; --l: 10%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="YouTube"></a>
-  </div>
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="YouTube"><img src="/pc/yt.png" alt="YouTube"></a>
+  </div>
 
-    <div class="slot slot-5" data-slot="#5" style="--t: 40%; --l: 75%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="Px1rt"></a>
-  </div>
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Px1rt"><img src="/pc/px1rt.png" alt="Px1rt"></a>
+  </div>
 
-    <div class="slot slot-6" data-slot="#buy" style="--t: 1%; --l: 1%; --w: 5%; --h: 5%;">
-    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
-  </div>
+  <div class="slot slot-6" data-slot="#buy">
+    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"><img src="/pc/buy.png" alt="Buy"></a>
+  </div>
 
-    <div class="slot slot-7" data-slot="#download" style="--t: 1%; --l: 10%; --w: 5%; --h: 5%;">
-    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
-  </div>
+  <div class="slot slot-7" data-slot="#download">
+    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"><img src="/pc/download.png" alt="Download"></a>
+  </div>
 </section>
 
+<!-- Mobile scene -->
 <section class="scene mobile" aria-label="Mobile scene">
-  <div class="lights" aria-hidden="true"></div>
+  <div class="lights" aria-hidden="true"></div>
 
-    <div class="slot slot-1" data-slot="#1" style="--t: 20%; --l: 10%; --w: 15%; --h: 25%;">
-    <a class="sticker" href="#" aria-label="FiradPatra"></a>
-  </div>
+  <div class="slot slot-1" data-slot="#1">
+    <a class="sticker" href="#" aria-label="FiradPatra"><img src="/mobile/fp.png" alt="FiradPatra"></a>
+  </div>
 
-    <div class="slot slot-2" data-slot="#2" style="--t: 10%; --l: 30%; --w: 40%; --h: 15%;">
-    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"></a>
-  </div>
+  <div class="slot slot-2" data-slot="#2">
+    <a class="sticker" href="/posts.html" aria-label="Welcome/Post"><img src="/mobile/post.png" alt="Post"></a>
+  </div>
 
-    <div class="slot slot-3" data-slot="#3" style="--t: 20%; --l: 75%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="Kathmandu"></a>
-  </div>
+  <div class="slot slot-3" data-slot="#3">
+    <a class="sticker" href="#" aria-label="Kathmandu"><img src="/mobile/ktm.png" alt="Kathmandu"></a>
+  </div>
 
-    <div class="slot slot-4" data-slot="#4" style="--t: 40%; --l: 10%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="YouTube"></a>
-  </div>
+  <div class="slot slot-4" data-slot="#4">
+    <a class="sticker" href="#" aria-label="YouTube"><img src="/mobile/yt.png" alt="YouTube"></a>
+  </div>
 
-    <div class="slot slot-5" data-slot="#5" style="--t: 40%; --l: 75%; --w: 15%; --h: 15%;">
-    <a class="sticker" href="#" aria-label="Px1rt"></a>
-  </div>
+  <div class="slot slot-5" data-slot="#5">
+    <a class="sticker" href="#" aria-label="Px1rt"><img src="/mobile/px1rt.png" alt="Px1rt"></a>
+  </div>
 
-    <div class="slot slot-6" data-slot="#buy" style="--t: 1%; --l: 1%; --w: 5%; --h: 5%;">
-    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"></a>
-  </div>
+  <div class="slot slot-6" data-slot="#buy">
+    <a class="sticker" href="#" target="_blank" rel="noopener" aria-label="Buy"><img src="/mobile/buy.png" alt="Buy"></a>
+  </div>
 
-    <div class="slot slot-7" data-slot="#download" style="--t: 1%; --l: 10%; --w: 5%; --h: 5%;">
-    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"></a>
-  </div>
+  <div class="slot slot-7" data-slot="#download">
+    <a class="sticker" href="/ktm.pdf" download aria-label="Download PDF"><img src="/mobile/download.png" alt="Download"></a>
+  </div>
 </section>
 
+<!-- Footer nav -->
 <nav class="footer-nav" aria-label="Footer navigation">
-  <div class="footer-left"><a id="resume-link" href="#">Resume</a></div>
-  <div class="footer-center"><a id="newsletter-open" href="#newsletter">Signup for Newsletter</a></div>
-  <div class="footer-right"><a id="archive-link" href="/archive.html">Archive posts</a></div>
+  <div class="footer-left"><a id="resume-link" href="#">Resume</a></div>
+  <div class="footer-center"><a id="newsletter-open" href="#newsletter">Signup for Newsletter</a></div>
+  <div class="footer-right"><a id="archive-link" href="/archive.html">Archive posts</a></div>
 </nav>
 
+<!-- Newsletter modal (fixed) -->
 <div id="newsletter-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal-sheet" role="document" aria-labelledby="newsletter-heading">
-        <img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />
-        <img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />
+  <div class="modal-sheet" role="document" aria-labelledby="newsletter-heading">
+    <!-- PC art -->
+    <img src="/pc/newsletter.png" alt="" class="modal-art pc-only" />
+    <!-- Mobile art -->
+    <img src="/mobile/newsletter.png" alt="" class="modal-art mobile-only" />
 
-        <div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
+    <!-- heading text overlay (Helvetica) -->
+    <div id="newsletter-heading" class="modal-heading">Subscribe to my newsletter</div>
 
-        <button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
+    <!-- close button -->
+    <button id="newsletter-close" class="modal-close" aria-label="Close">×</button>
 
-        <div class="modal-overlay">
-      <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
-        <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
-        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
-        <button type="submit" class="modal-submit">Subscribe</button>
-      </form>
-    </div>
-  </div>
+    <!-- input & submit overlayed at bottom -->
+    <div class="modal-overlay">
+      <form id="newsletter-form-inline" style="display:flex;gap:8px;width:100%;align-items:center;">
+        <label for="newsletter-email" style="position:absolute;left:-9999px">Email</label>
+        <input id="newsletter-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" class="modal-input" />
+        <button type="submit" class="modal-submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
 /* Lights loader (unchanged) */
 (function(){
-  const FRAME_COUNT = 16;
-  const FPS = 12;
-  const pad4 = n => String(n).padStart(4,'0');
+  const FRAME_COUNT = 16;
+  const FPS = 12;
+  const pad4 = n => String(n).padStart(4,'0');
 
-  function tryUseGif(sceneEl, gifPath){
-    return fetch(gifPath, { method: 'HEAD' }).then(res => {
-      if(res.ok){
-        const layer = sceneEl.querySelector('.lights');
-        if(layer){
-          layer.style.backgroundImage = `url("${gifPath}")`;
-          layer.style.backgroundSize = 'auto';
-        }
-        return true;
-      }
-      return false;
-    }).catch(()=> false);
-  }
+  function tryUseGif(sceneEl, gifPath){
+    return fetch(gifPath, { method: 'HEAD' }).then(res => {
+      if(res.ok){
+        const layer = sceneEl.querySelector('.lights');
+        if(layer){
+          layer.style.backgroundImage = `url("${gifPath}")`;
+          layer.style.backgroundSize = 'auto';
+        }
+        return true;
+      }
+      return false;
+    }).catch(()=> false);
+  }
 
-  function buildFrameList(baseDir){
-    const list = [];
-    for(let i=0;i<FRAME_COUNT;i++){
-      list.push(`${baseDir}/lights${pad4(i)}.png`);
-    }
-    return list;
-  }
+  function buildFrameList(baseDir){
+    const list = [];
+    for(let i=0;i<FRAME_COUNT;i++){
+      list.push(`${baseDir}/lights${pad4(i)}.png`);
+    }
+    return list;
+  }
 
-  function preloadFrames(urls){
-    return Promise.all(urls.map(u => new Promise(res=>{
-      const img = new Image();
-      img.onload = ()=>res({u, ok:true});
-      img.onerror = ()=>res({u, ok:false});
-      img.src = u + `?v=1`;
-    })));
-  }
+  function preloadFrames(urls){
+    return Promise.all(urls.map(u => new Promise(res=>{
+      const img = new Image();
+      img.onload = ()=>res({u, ok:true});
+      img.onerror = ()=>res({u, ok:false});
+      img.src = u + `?v=1`;
+    })));
+  }
 
-  function startSequence(sceneEl, frames, fps){
-    const layer = sceneEl.querySelector('.lights');
-    if(!layer || !frames.length) return;
-    let i = 0, last = 0, interval = 1000/Math.max(1,fps);
-    function tick(ts){
-      if(!last) last = ts;
-      const dt = ts - last;
-      if(dt >= interval){
-        layer.style.backgroundImage = `url("${frames[i]}")`;
-        i = (i + 1) % frames.length;
-        last = ts;
-      }
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
+  function startSequence(sceneEl, frames, fps){
+    const layer = sceneEl.querySelector('.lights');
+    if(!layer || !frames.length) return;
+    let i = 0, last = 0, interval = 1000/Math.max(1,fps);
+    function tick(ts){
+      if(!last) last = ts;
+      const dt = ts - last;
+      if(dt >= interval){
+        layer.style.backgroundImage = `url("${frames[i]}")`;
+        i = (i + 1) % frames.length;
+        last = ts;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
 
-  async function initFor(kind){
-    const sceneEl = document.querySelector(`.${kind}`);
-    if(!sceneEl) return;
-    const gifPath = `/${kind}/lights.gif`;
-    const gifOk = await tryUseGif(sceneEl, gifPath);
-    if(gifOk) return;
-    const frames = buildFrameList(`/${kind}/lights`);
-    const results = await preloadFrames(frames);
-    const ok = results.filter(r=>r.ok).map(r=>r.u);
-    if(ok.length) startSequence(sceneEl, ok, FPS);
-    else {
-      const layer = sceneEl.querySelector('.lights');
-      if(layer) layer.style.display = 'none';
-    }
-  }
+  async function initFor(kind){
+    const sceneEl = document.querySelector(`.${kind}`);
+    if(!sceneEl) return;
+    const gifPath = `/${kind}/lights.gif`;
+    const gifOk = await tryUseGif(sceneEl, gifPath);
+    if(gifOk) return;
+    const frames = buildFrameList(`/${kind}/lights`);
+    const results = await preloadFrames(frames);
+    const ok = results.filter(r=>r.ok).map(r=>r.u);
+    if(ok.length) startSequence(sceneEl, ok, FPS);
+    else {
+      const layer = sceneEl.querySelector('.lights');
+      if(layer) layer.style.display = 'none';
+    }
+  }
 
-  initFor('pc');
-  initFor('mobile');
+  initFor('pc');
+  initFor('mobile');
 })();
 
-/* Newsletter modal behavior + fallback (unchanged) */
+/* Newsletter modal behavior + fallback */
 (function(){
-  const modal = document.getElementById('newsletter-modal');
-  const open = document.getElementById('newsletter-open');
-  const closeBtn = document.getElementById('newsletter-close');
-  const form = document.getElementById('newsletter-form-inline');
-  const input = document.getElementById('newsletter-email');
+  const modal = document.getElementById('newsletter-modal');
+  const open = document.getElementById('newsletter-open');
+  const closeBtn = document.getElementById('newsletter-close');
+  const form = document.getElementById('newsletter-form-inline');
+  const input = document.getElementById('newsletter-email');
 
-  function showModal(){
-    modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden','false');
-    // focus input after a tiny delay so keyboard works on mobile
-    setTimeout(()=> input.focus(), 120);
-  }
-  function hideModal(){
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden','true');
-  }
+  function showModal(){
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    // focus input after a tiny delay so keyboard works on mobile
+    setTimeout(()=> input.focus(), 120);
+  }
+  function hideModal(){
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
 
-  // Attach open/close handlers
-  if(open) open.addEventListener('click', e => { e.preventDefault(); showModal(); });
-  if(closeBtn) closeBtn.addEventListener('click', hideModal);
-  modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
-  addEventListener('keydown', e => { if(e.key === 'Escape') hideModal(); });
+  // Attach open/close handlers
+  if(open) open.addEventListener('click', e => { e.preventDefault(); showModal(); });
+  if(closeBtn) closeBtn.addEventListener('click', hideModal);
+  modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
+  addEventListener('keydown', e => { if(e.key === 'Escape') hideModal(); });
 
-  // Local storage fallback and server POST try
-  const LOCAL_KEY = 'newsletter_emails_v1';
-  function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
-  function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+  // Local storage fallback and server POST try
+  const LOCAL_KEY = 'newsletter_emails_v1';
+  function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
+  function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
 
-  async function postToServer(email){
-    try {
-      const r = await fetch('/api/signup', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ email })
-      });
-      if(!r.ok) throw new Error('server failed');
-      return true;
-  _ } catch(e){
-      return false;
-    }
-  }
+  async function postToServer(email){
+    try {
+      const r = await fetch('/api/signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email })
+      });
+      if(!r.ok) throw new Error('server failed');
+      return true;
+    } catch(e){
+      return false;
+    }
+  }
 
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const email = (input.value || '').trim().toLowerCase();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = (input.value || '').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email address.'); return; }
 
-    // try server
-    const ok = await postToServer(email);
-    if(ok){
-      alert('Thanks — subscribed!');
-      hideModal();
-      form.reset();
-      return;
-    }
+    // try server
+    const ok = await postToServer(email);
+    if(ok){
+      alert('Thanks — subscribed!');
+      hideModal();
+      form.reset();
+      return;
+    }
 
-    // fallback local
-    const list = loadList();
-    if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
-    list.push({ email, ts: new Date().toISOString() });
-    saveList(list);
-    alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
+    // fallback local
+    const list = loadList();
+    if(list.some(x => x.email === email)){ alert('You are already subscribed (local).'); return; }
+    list.push({ email, ts: new Date().toISOString() });
+    saveList(list);
+    alert('Subscribed (local). A signup.txt file download will begin so you can save it to your repo.');
 
-    // create signup.txt download
-    const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
-    const blob = new Blob([txt], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'signup.txt';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    // create signup.txt download
+    const txt = list.map(x => `${x.email}\t${x.ts}`).join('\n');
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'signup.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 
-    hideModal();
-    form.reset();
-  });
+    hideModal();
+    form.reset();
+  });
 
 })();
 </script>
