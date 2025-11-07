@@ -3,77 +3,85 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Posts — Noticeboard</title>
+<title>Latest Post</title>
 <style>
-  html,body{height:100%;margin:0;font-family:Helvetica,Arial,sans-serif;background:#cfcfcf;}
-  .wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:36px; box-sizing:border-box;}
-  .board{
-    position:relative;
-    width:min(1100px,95vw);
-    height:min(700px,84vh);
-    background: #cfcfcf;
-    box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 0 8px rgba(0,0,0,.12);
-    border-radius:12px;
-    overflow:hidden;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .layer.paper,
-  .layer.board-overlay { position:absolute; inset:0; background-repeat:no-repeat; background-position:center; background-size:cover; pointer-events:none; }
-  .layer.paper { z-index:0; filter:drop-shadow(0 10px 30px rgba(0,0,0,.45)); }
-  .content { z-index:1; width:76%; max-height:80%; overflow:auto; padding:42px 48px; box-sizing:border-box; background:transparent; color:#111; font-size:1.05rem; line-height:1.6; }
-  .content pre { white-space:pre-wrap; font-family:Georgia, "Times New Roman", serif; font-size:1rem; color:#222; }
-  .layer.board-overlay{ z-index:2; pointer-events:none; mix-blend-mode:normal; }
-  .topbar { position:absolute; top:14px; left:14px; z-index:3; display:flex; gap:8px; align-items:center; }
-  .btn { font-family:Helvetica,Arial,sans-serif; background:#ffd400; border-radius:10px; padding:.5rem .8rem; font-weight:700; box-shadow:0 6px 14px rgba(0,0,0,.25); text-decoration:none; color:#111; }
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#000;color:#d4a574;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  .container{max-width:800px;margin:0 auto;padding:60px 24px;min-height:100vh;box-sizing:border-box;}
+  .header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid rgba(212,165,116,0.2);}
+  .back-link{display:inline-block;margin-bottom:24px;color:#d4a574;text-decoration:none;font-size:14px;opacity:0.8;transition:opacity 0.2s;}
+  .back-link:hover{opacity:1;}
+  h1{font-size:2.5rem;margin:0 0 12px 0;color:#e8c896;font-weight:700;line-height:1.2;}
+  .date{font-size:0.95rem;color:#b89364;opacity:0.9;margin:0;}
+  .content{margin-top:36px;font-size:1.125rem;line-height:1.8;color:#d4a574;}
+  .content p{margin:0 0 24px 0;}
+  .content p:last-child{margin-bottom:0;}
   @media (max-width:800px){
-    .board{ width:94vw; height:84vh; border-radius:8px; }
-    .content{ width:86%; padding:28px; font-size:1rem; }
+    .container{padding:40px 20px;}
+    h1{font-size:2rem;}
+    .content{font-size:1rem;line-height:1.7;}
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="board" role="main" aria-label="Post view (noticeboard)">
-      <div class="layer paper" id="paper-layer" aria-hidden="true"></div>
-
-      <div class="content" id="post-content">
-        <pre>Loading post…</pre>
-      </div>
-
-      <div class="layer board-overlay" id="overlay-layer" aria-hidden="true"></div>
-
-      <div class="topbar">
-        <a href="/" class="btn" title="Back">Back</a>
-      </div>
+  <div class="container">
+    <div class="header">
+      <a href="/" class="back-link">← Back</a>
+      <h1 id="post-title">Loading post…</h1>
+      <p class="date" id="post-date"></p>
+    </div>
+    <div class="content" id="post-content">
+      <p>Loading post content…</p>
     </div>
   </div>
 
 <script>
 (function(){
-  function isMobile() { return window.matchMedia('(max-width:800px)').matches; }
-  const kind = isMobile() ? 'mobile' : 'pc';
-  document.getElementById('paper-layer').style.backgroundImage = `url('/${kind}/paper.png')`;
-  document.getElementById('overlay-layer').style.backgroundImage = `url('/${kind}/noticeboard.png')`;
-
+  // Fetch the latest post
   fetch('/posts/text.txt').then(r=>{
     if(!r.ok) throw new Error('no text file found');
     return r.text();
   }).then(txt=>{
-    const el = document.getElementById('post-content');
-    el.innerHTML = '';
-    const pre = document.createElement('pre');
-    pre.textContent = txt;
-    el.appendChild(pre);
+    const lines = txt.split(/\r?\n/).filter(line => line.trim());
+    const titleEl = document.getElementById('post-title');
+    const dateEl = document.getElementById('post-date');
+    const contentEl = document.getElementById('post-content');
+    
+    if(lines.length === 0){
+      titleEl.textContent = 'No post available';
+      contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
+      return;
+    }
+    
+    // First line is title, optionally second line can be date (format: YYYY-MM-DD)
+    let title = lines[0];
+    let date = '';
+    let contentStart = 1;
+    
+    // Check if second line looks like a date
+    if(lines.length > 1 && /^\d{4}-\d{2}-\d{2}/.test(lines[1])){
+      date = lines[1];
+      contentStart = 2;
+    }
+    
+    // Rest is content
+    const content = lines.slice(contentStart).join('\n');
+    
+    titleEl.textContent = title;
+    if(date){
+      const dateObj = new Date(date);
+      dateEl.textContent = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    } else {
+      dateEl.style.display = 'none';
+    }
+    
+    // Convert markdown-style formatting or plain text to HTML paragraphs
+    const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
+    contentEl.innerHTML = paragraphs.map(p => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`).join('');
   }).catch(err=>{
-    const el = document.getElementById('post-content');
-    el.innerHTML = '<p style="color:#222;">This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
-  });
-
-  // reload when viewport crosses threshold
-  let lastKind = kind;
-  addEventListener('resize', () => {
-    const newKind = isMobile() ? 'mobile' : 'pc';
-    if(newKind !== lastKind) location.reload();
+    const titleEl = document.getElementById('post-title');
+    const contentEl = document.getElementById('post-content');
+    titleEl.textContent = 'Post not available';
+    contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
   });
 })();
 </script>
