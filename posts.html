@@ -37,7 +37,7 @@
 <script>
 (function(){
   // Fetch the latest post
-  fetch('/posts/text.txt').then(r=>{
+  fetch('/files/1pilot.txt').then(r=>{
     if(!r.ok) throw new Error('no text file found');
     return r.text();
   }).then(txt=>{
