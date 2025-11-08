@@ -10,7 +10,20 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+
+// Enable CORS for all routes (needed when deployed)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 app.use(bodyParser.json({ limit: '10kb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const SIGNUP_PATH = path.join(__dirname, 'files', 'sign.txt');
 
@@ -27,23 +40,29 @@ if (!fs.existsSync(archiveDir)) {
 // Newsletter signup endpoint - appends email to files/sign.txt
 app.post('/api/signup', (req, res) => {
   const { email } = req.body || {};
+  
   if(!email || typeof email !== 'string') {
+    console.error('Invalid email received:', email);
     return res.status(400).json({ ok:false, error:'invalid email' });
   }
   
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegex.test(email.toLowerCase().trim())) {
+  const normalizedEmail = email.toLowerCase().trim();
+  
+  if(!emailRegex.test(normalizedEmail)) {
+    console.error('Invalid email format:', normalizedEmail);
     return res.status(400).json({ ok:false, error:'invalid email format' });
   }
   
-  const emailLine = `${email.toLowerCase().trim()}\n`;
-  fs.appendFile(SIGNUP_PATH, emailLine, err => {
+  // Append email to sign.txt (one email per line)
+  const emailLine = `${normalizedEmail}\n`;
+  fs.appendFile(SIGNUP_PATH, emailLine, { encoding: 'utf8' }, err => {
     if(err) {
       console.error('Error writing to sign.txt:', err);
       return res.status(500).json({ ok:false, error:'failed to save email' });
     }
-    console.log(`New signup: ${email.toLowerCase().trim()}`);
+    console.log(`✓ New signup saved to files/sign.txt: ${normalizedEmail}`);
     return res.json({ ok:true });
   });
 });
@@ -111,12 +130,14 @@ app.get('/archive/:filename', (req, res) => {
   }
 });
 
-// serve static files (for quick local testing)
+// serve static files (MUST be last, after API routes)
 app.use(express.static(path.join(__dirname)));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-  console.log(`Archive endpoint: http://localhost:${port}/api/archive/list`);
-  console.log(`Signup endpoint: http://localhost:${port}/api/signup`);
+  console.log(`\n✓ Server listening on port ${port}`);
+  console.log(`  Site: http://localhost:${port}`);
+  console.log(`  Archive API: http://localhost:${port}/api/archive/list`);
+  console.log(`  Signup API: http://localhost:${port}/api/signup`);
+  console.log(`\n⚠ IMPORTANT: Use this server (port ${port}), not http-server!\n`);
 });
