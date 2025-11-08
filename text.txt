@@ -1,4 +1,0 @@
-Your post title here
-
-Write your content here. This file is fetched and displayed by /posts.html.
-You can edit this file in the repo to update the post visible at /posts.html.
