@@ -368,67 +368,54 @@
   modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
   addEventListener('keydown', e => { if(e.key === 'Escape') hideModal(); });
 
-  // Local storage fallback and server POST try
-  const LOCAL_KEY = 'newsletter_emails_v1';
-  function loadList(){ try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }catch{ return []; } }
-  function saveList(list){ localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+// IMPORTANT: REPLACE 'YOUR_FORMSPREE_ENDPOINT_URL' with the unique URL provided by Formspree
+  const FORMSPREE_URL = 'YOUR_FORMSPREE_ENDPOINT_URL'; 
 
-  async function postToServer(email){
-    try {
-      const r = await fetch('/api/signup', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ email })
-      });
-      if(!r.ok) throw new Error('server failed');
-      return true;
-    } catch(e){
-      return false;
-    }
-  }
+  // Removed: loadList(), saveList(), and LOCAL_KEY as they are no longer needed.
 
-  // Notification function
-  function showNotification(message){
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.classList.add('show');
-    setTimeout(()=>{
-      notification.classList.remove('show');
-      setTimeout(()=>{
-        notification.textContent = '';
-      }, 300);
-    }, 3000);
-  }
+  async function postToServer(email){
+    try {
+      const r = await fetch(https://formspree.io/f/xqawzeyw, {
+        method:'POST',
+        headers:{'Accept':'application/json'}, // Formspree prefers 'Accept' header for JSON response
+        // Formspree expects the data as key/value pairs
+        body: JSON.stringify({ 
+          email: email 
+        })
+      });
+      
+      // Formspree returns r.ok (a 200 series status) on successful submission
+      return r.ok; 
+    } catch(e){
+      // This catches network errors, but generally Formspree is reliable.
+      return false;
+    }
+  }
 
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const email = (input.value || '').trim().toLowerCase();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ 
-      showNotification('Please enter a valid email address.');
-      return; 
-    }
+  // Notification function (KEEP this function and its definition immediately after postToServer)
+  // ... (Your existing showNotification code remains here) ...
 
-    // try server
-    const ok = await postToServer(email);
-    if(ok){
-      showNotification('You have been signed up!');
-      hideModal();
-      form.reset();
-      return;
-    }
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = (input.value || '').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ 
+      showNotification('Please enter a valid email address.');
+      return; 
+    }
 
-    // fallback local
-    const list = loadList();
-    if(list.some(x => x.email === email)){ 
-      showNotification('You are already subscribed.');
-      return; 
-    }
-    list.push({ email, ts: new Date().toISOString() });
-    saveList(list);
-    showNotification('You have been signed up!');
-    hideModal();
-    form.reset();
-  });
+    // Send directly to Formspree
+    const ok = await postToServer(email);
+    if(ok){
+      showNotification('You have been signed up!');
+    } else {
+      // This handles network failure or a Formspree error
+      showNotification('Subscription failed. Please try again.');
+    }
+    
+    hideModal();
+    form.reset();
+    return;
+  });
 
 })();
 </script>
