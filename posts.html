@@ -1,90 +1,34 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Fired</title>
-<link rel="icon" type="image/png" href="/files/favicon.png">
 <style>
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#000;color:#d4a574;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-  .container{max-width:800px;margin:0 auto;padding:60px 24px;min-height:100vh;box-sizing:border-box;}
-  .header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid rgba(212,165,116,0.2);}
-  .back-link{display:inline-block;margin-bottom:24px;color:#d4a574;text-decoration:none;font-size:14px;opacity:0.8;transition:opacity 0.2s;}
-  .back-link:hover{opacity:1;}
-  h1{font-size:2.5rem;margin:0 0 12px 0;color:#e8c896;font-weight:700;line-height:1.2;}
-  .date{font-size:0.95rem;color:#b89364;opacity:0.9;margin:0;}
-  .content{margin-top:36px;font-size:1.125rem;line-height:1.8;color:#d4a574;}
-  .content p{margin:0 0 24px 0;}
-  .content p:last-child{margin-bottom:0;}
-  @media (max-width:800px){
-    .container{padding:40px 20px;}
-    h1{font-size:2rem;}
-    .content{font-size:1rem;line-height:1.7;}
-  }
+  html,body{
+    height:100%;
+    margin:0;
+    /* Updated body font stack for a clean, system-default sans-serif ("blanco y negro") */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:#000;
+    color:#d4a574;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+  .container{max-width:800px;margin:0 auto;padding:60px 24px;min-height:100vh;box-sizing:border-box;}
+  .header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid rgba(212,165,116,0.2);}
+  .back-link{display:inline-block;margin-bottom:24px;color:#d4a574;text-decoration:none;font-size:14px;opacity:0.8;transition:opacity 0.2s;}
+  .back-link:hover{opacity:1;}
+  h1{
+    /* Updated: Title font set to Helvetica */
+    font-size:2.5rem;
+    margin:0 0 12px 0;
+    color:#e8c896;
+    font-weight:700;
+    line-height:1.2;
+    font-family: Helvetica, Arial, sans-serif;
+}
+  .date{font-size:0.95rem;color:#b89364;opacity:0.9;margin:0;}
+  .content{margin-top:36px;font-size:1.125rem;line-height:1.8;color:#d4a574;}
+  .content p{margin:0 0 24px 0;}
+  .content p:last-child{margin-bottom:0;}
+  @media (max-width:800px){
+    .container{padding:40px 20px;}
+    h1{font-size:2rem;}
+    .content{font-size:1rem;line-height:1.7;}
+  }
 </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <a href="/" class="back-link">← Back</a>
-      <h1 id="post-title">Loading post…</h1>
-      <p class="date" id="post-date"></p>
-    </div>
-    <div class="content" id="post-content">
-      <p>Loading post content…</p>
-    </div>
-  </div>
-
-<script>
-(function(){
-  // Fetch the latest post
-  fetch('/files/1pilot.txt').then(r=>{
-    if(!r.ok) throw new Error('no text file found');
-    return r.text();
-  }).then(txt=>{
-    const lines = txt.split(/\r?\n/).filter(line => line.trim());
-    const titleEl = document.getElementById('post-title');
-    const dateEl = document.getElementById('post-date');
-    const contentEl = document.getElementById('post-content');
-    
-    if(lines.length === 0){
-      titleEl.textContent = 'No post available';
-      contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
-      return;
-    }
-    
-    // First line is title, optionally second line can be date (format: YYYY-MM-DD)
-    let title = lines[0];
-    let date = '';
-    let contentStart = 1;
-    
-    // Check if second line looks like a date
-    if(lines.length > 1 && /^\d{4}-\d{2}-\d{2}/.test(lines[1])){
-      date = lines[1];
-      contentStart = 2;
-    }
-    
-    // Rest is content
-    const content = lines.slice(contentStart).join('\n');
-    
-    titleEl.textContent = title;
-    if(date){
-      const dateObj = new Date(date);
-      dateEl.textContent = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    } else {
-      dateEl.style.display = 'none';
-    }
-    
-    // Convert markdown-style formatting or plain text to HTML paragraphs
-    const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
-    contentEl.innerHTML = paragraphs.map(p => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`).join('');
-  }).catch(err=>{
-    const titleEl = document.getElementById('post-title');
-    const contentEl = document.getElementById('post-content');
-    titleEl.textContent = 'Post not available';
-    contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
-  });
-})();
-</script>
-</body>
-</html>
