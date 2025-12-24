@@ -6,84 +6,522 @@
 <title>Fired</title>
 <link rel="icon" type="image/png" href="/files/favicon.png">
 <style>
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#000;color:#d4a574;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-  .container{max-width:800px;margin:0 auto;padding:60px 24px;min-height:100vh;box-sizing:border-box;}
-  .header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid rgba(212,165,116,0.2);}
-  .back-link{display:inline-block;margin-bottom:24px;color:#d4a574;text-decoration:none;font-size:14px;opacity:0.8;transition:opacity 0.2s;}
-  .back-link:hover{opacity:1;}
-  h1{font-size:2.5rem;margin:0 0 12px 0;color:#e8c896;font-weight:700;line-height:1.2;}
-  .date{font-size:0.95rem;color:#b89364;opacity:0.9;margin:0;}
-  .content{margin-top:36px;font-size:1.125rem;line-height:1.8;color:#d4a574;}
-  .content p{margin:0 0 24px 0;}
-  .content p:last-child{margin-bottom:0;}
-  @media (max-width:800px){
-    .container{padding:40px 20px;}
-    h1{font-size:2rem;}
-    .content{font-size:1rem;line-height:1.7;}
-  }
+  :root{
+    --bg: #070707;
+    --panel: rgba(255,255,255,0.03);
+    --panel-strong: rgba(255,255,255,0.05);
+    --text: #d4a574;
+    --text-strong: #e8c896;
+    --muted: rgba(212,165,116,0.78);
+    --border: rgba(212,165,116,0.16);
+    --border-strong: rgba(212,165,116,0.22);
+    --shadow: 0 12px 34px rgba(0,0,0,0.55);
+    --maxw: 920px;
+    --topbar-h: 56px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  a{ color:inherit; }
+
+  /* Top chapter bar */
+  .topbar{
+    position:fixed;
+    top:0; left:0; right:0;
+    height:var(--topbar-h);
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:0 clamp(12px, 3.2vw, 20px);
+    background:rgba(0,0,0,0.72);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar[hidden]{ display:none; }
+  .topbar-back{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    font-size:14px;
+    opacity:0.92;
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid transparent;
+    transition:opacity .15s ease, background .15s ease, border-color .15s ease;
+    white-space:nowrap;
+  }
+  .topbar-back:hover{ opacity:1; background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.06); }
+
+  .chapter-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    flex:1;
+    min-width:0;
+  }
+  .chapter-link{
+    max-width:28vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-decoration:none;
+    font-size:13px;
+    color:var(--muted);
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid transparent;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .chapter-link:hover{ background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.06); color:var(--text-strong); }
+  .chapter-link[aria-disabled="true"]{ opacity:0.4; pointer-events:none; }
+
+  .chapter-current{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:12px;
+    border:1px solid var(--border-strong);
+    background:rgba(0,0,0,0.35);
+    color:var(--text-strong);
+    font-weight:700;
+    font-size:13px;
+    max-width:min(520px, 46vw);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .chapter-select{
+    display:none;
+    background:rgba(0,0,0,0.35);
+    border:1px solid var(--border-strong);
+    color:var(--text-strong);
+    border-radius:12px;
+    padding:8px 10px;
+    font-size:14px;
+    max-width:52vw;
+  }
+
+  /* Page layout */
+  .page{
+    min-height:100vh;
+    padding-top: 26px;
+    padding-left: clamp(14px, 3.8vw, 28px);
+    padding-right: clamp(14px, 3.8vw, 28px);
+    padding-bottom: 72px;
+  }
+  body.has-topbar .page{
+    padding-top: calc(var(--topbar-h) + 18px);
+  }
+  .container{
+    max-width:var(--maxw);
+    margin:0 auto;
+  }
+  .post{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow: var(--shadow);
+    padding: clamp(18px, 3.6vw, 34px);
+  }
+  .header{
+    margin-bottom:22px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--border);
+  }
+  .back-link{ display:none; } /* replaced by top bar */
+  h1{ font-size:2.4rem; margin:0 0 8px 0; color:var(--text-strong); font-weight:800; letter-spacing:-0.02em; line-height:1.14; }
+  .subhead{ margin:0; color:var(--muted); font-size:0.98rem; line-height:1.45; display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; }
+  .date{ color:rgba(212,165,116,0.72); font-size:0.95rem; }
+  .chapter-pill{ display:none; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--panel-strong); color:var(--text-strong); font-weight:700; font-size:0.85rem; }
+
+  .content{
+    margin-top:18px;
+    font-size:1.085rem;
+    line-height:1.82;
+    color:var(--text);
+  }
+  .content p{ margin:0 0 18px 0; }
+  .content p:last-child{ margin-bottom:0; }
+  .content hr{ border:0; border-top:1px solid var(--border); margin:26px 0; }
+  .content blockquote{
+    margin:18px 0;
+    padding:12px 14px;
+    border-left:2px solid var(--border-strong);
+    background: rgba(0,0,0,0.25);
+    color: rgba(232,200,150,0.92);
+    border-radius:12px;
+  }
+
+  @media (max-width:800px){
+    :root{ --topbar-h: 60px; }
+    h1{ font-size:1.82rem; }
+    .content{ font-size:1rem; line-height:1.72; }
+    .chapter-nav{ gap:8px; }
+    .chapter-link{
+      display:inline-flex;
+      max-width:20vw;
+      padding:8px 8px;
+      font-size:12px;
+    }
+    body.has-chapters .chapter-current{ display:none; }
+    body.has-chapters .chapter-select{ display:inline-flex; }
+    .topbar-back{ padding:8px 8px; }
+  }
 </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <a href="/" class="back-link">← Back</a>
-      <h1 id="post-title">Loading post…</h1>
-      <p class="date" id="post-date"></p>
-    </div>
-    <div class="content" id="post-content">
-      <p>Loading post content…</p>
-    </div>
-  </div>
+<body class="has-topbar">
+  <nav class="topbar" id="topbar" aria-label="Chapter navigation">
+    <a class="topbar-back" href="/">← Back</a>
+    <div class="chapter-nav" role="navigation" aria-label="Chapters">
+      <a class="chapter-link" id="prev-chapter" href="#" aria-disabled="true" tabindex="-1"></a>
+      <span class="chapter-current" id="current-chapter" title="">Loading…</span>
+      <label for="chapter-select" style="position:absolute;left:-9999px">Choose chapter</label>
+      <select class="chapter-select" id="chapter-select"></select>
+      <a class="chapter-link" id="next-chapter" href="#" aria-disabled="true" tabindex="-1"></a>
+    </div>
+    <span style="width:96px;display:block" aria-hidden="true"></span>
+  </nav>
+
+  <main class="page">
+    <div class="container">
+      <article class="post" aria-live="polite">
+        <header class="header">
+          <h1 id="post-title">Loading post…</h1>
+          <p class="subhead">
+            <span class="date" id="post-date"></span>
+            <span class="chapter-pill" id="chapter-pill"></span>
+          </p>
+        </header>
+        <div class="content" id="post-content">
+          <p>Loading post content…</p>
+        </div>
+      </article>
+    </div>
+  </main>
 
 <script>
 (function(){
-  // Fetch the latest post
-  fetch('/files/1pilot.txt').then(r=>{
-    if(!r.ok) throw new Error('no text file found');
-    return r.text();
-  }).then(txt=>{
-    const lines = txt.split(/\r?\n/).filter(line => line.trim());
-    const titleEl = document.getElementById('post-title');
-    const dateEl = document.getElementById('post-date');
-    const contentEl = document.getElementById('post-content');
-    
-    if(lines.length === 0){
-      titleEl.textContent = 'No post available';
-      contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
-      return;
-    }
-    
-    // First line is title, optionally second line can be date (format: YYYY-MM-DD)
-    let title = lines[0];
-    let date = '';
-    let contentStart = 1;
-    
-    // Check if second line looks like a date
-    if(lines.length > 1 && /^\d{4}-\d{2}-\d{2}/.test(lines[1])){
-      date = lines[1];
-      contentStart = 2;
-    }
-    
-    // Rest is content
-    const content = lines.slice(contentStart).join('\n');
-    
-    titleEl.textContent = title;
-    if(date){
-      const dateObj = new Date(date);
-      dateEl.textContent = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    } else {
-      dateEl.style.display = 'none';
-    }
-    
-    // Convert markdown-style formatting or plain text to HTML paragraphs
-    const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
-    contentEl.innerHTML = paragraphs.map(p => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`).join('');
-  }).catch(err=>{
-    const titleEl = document.getElementById('post-title');
-    const contentEl = document.getElementById('post-content');
-    titleEl.textContent = 'Post not available';
-    contentEl.innerHTML = '<p>This post is not yet available. Create <code>/posts/text.txt</code> to publish.</p>';
-  });
+  const titleEl = document.getElementById('post-title');
+  const dateEl = document.getElementById('post-date');
+  const contentEl = document.getElementById('post-content');
+  const topbarEl = document.getElementById('topbar');
+  const prevEl = document.getElementById('prev-chapter');
+  const nextEl = document.getElementById('next-chapter');
+  const currentEl = document.getElementById('current-chapter');
+  const selectEl = document.getElementById('chapter-select');
+  const chapterPillEl = document.getElementById('chapter-pill');
+  let postTitleForBar = 'Post';
+
+  function escapeHtml(s){
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function slugify(s){
+    return String(s)
+      .toLowerCase()
+      .trim()
+      .replace(/['"]/g,'')
+      .replace(/[^a-z0-9]+/g,'-')
+      .replace(/-+/g,'-')
+      .replace(/(^-|-$)/g,'');
+  }
+
+  function looksLikeDate(s){
+    return /^\d{4}-\d{2}-\d{2}/.test(String(s || '').trim());
+  }
+
+  function renderTextToHtml(text){
+    const raw = String(text || '').trim();
+    if(!raw) return '';
+    const blocks = raw.split(/\n{2,}/g).filter(b => b.trim());
+    return blocks.map(b => {
+      const t = b.trim();
+      // Lightweight quote support: lines starting with ">" become a blockquote
+      if(/^>\s?/.test(t)){
+        const q = t.split(/\r?\n/).map(line => line.replace(/^>\s?/, '')).join('\n');
+        return `<blockquote>${escapeHtml(q).replace(/\n/g,'<br>')}</blockquote>`;
+      }
+      // horizontal rule line
+      if(/^(-{3,}|\*{3,}|_{3,})$/.test(t.replace(/\s+/g,''))){
+        return `<hr />`;
+      }
+      return `<p>${escapeHtml(t).replace(/\n/g,'<br>')}</p>`;
+    }).join('');
+  }
+
+  function parseChapters(rawContent){
+    const lines = String(rawContent || '').split(/\r?\n/);
+    const chapters = [];
+    let current = null;
+    let buffer = [];
+
+    function pushCurrent(){
+      if(!current) return;
+      const body = buffer.join('\n').trim();
+      chapters.push({
+        label: current.label,
+        slug: current.slug,
+        number: current.number,
+        body
+      });
+    }
+
+    for(const line of lines){
+      const t = String(line || '').trim();
+      const m = t.match(/^chapter\s+(\d+(?:\.\d+)?)(?:\s*[:\-–—]\s*(.+))?$/i);
+      if(m){
+        pushCurrent();
+        const num = m[1];
+        const name = (m[2] || '').trim();
+        const label = name ? `Chapter ${num}: ${name}` : `Chapter ${num}`;
+        current = { label, slug: slugify(label), number: num };
+        buffer = [];
+        continue;
+      }
+      buffer.push(line);
+    }
+    pushCurrent();
+
+    // If no explicit chapters, treat as one chapter-less document
+    if(chapters.length === 0){
+      return [{
+        label: '',
+        slug: '',
+        number: '',
+        body: String(rawContent || '').trim()
+      }];
+    }
+
+    // Remove empty chapter bodies (but keep headers)
+    return chapters.map(c => ({ ...c, body: (c.body || '').trim() }));
+  }
+
+  function setLinkState(a, enabled, text, href){
+    a.textContent = text || '';
+    if(enabled){
+      a.setAttribute('aria-disabled','false');
+      a.removeAttribute('tabindex');
+      a.href = href;
+      a.style.visibility = 'visible';
+    } else {
+      a.setAttribute('aria-disabled','true');
+      a.setAttribute('tabindex','-1');
+      a.href = '#';
+      a.style.visibility = 'hidden';
+    }
+  }
+
+  function setUrlChapter(source, chapterSlug){
+    const url = new URL(window.location.href);
+    if(source) url.searchParams.set('file', source);
+    if(chapterSlug) url.searchParams.set('chapter', chapterSlug);
+    else url.searchParams.delete('chapter');
+    history.replaceState({}, '', url.toString());
+  }
+
+  function getSourceFile(){
+    const url = new URL(window.location.href);
+    const fileParam = url.searchParams.get('file');
+    if(!fileParam) return '/files/1pilot.txt';
+    const cleaned = decodeURIComponent(fileParam).trim();
+    // Basic safety: only allow same-origin absolute paths
+    if(!cleaned.startsWith('/')) return '/files/1pilot.txt';
+    if(cleaned.includes('://')) return '/files/1pilot.txt';
+    return cleaned;
+  }
+
+  function pickActiveChapter(chapters){
+    const url = new URL(window.location.href);
+    const wanted = (url.searchParams.get('chapter') || '').trim().toLowerCase();
+    if(!wanted) return 0;
+    const bySlug = chapters.findIndex(c => (c.slug || '').toLowerCase() === wanted);
+    if(bySlug >= 0) return bySlug;
+    const byNumber = chapters.findIndex(c => String(c.number || '').toLowerCase() === wanted);
+    if(byNumber >= 0) return byNumber;
+    return 0;
+  }
+
+  function renderChapterNav(chapters, activeIdx, sourceFile){
+    const multi = chapters.length > 1;
+    topbarEl.hidden = false;
+    document.body.classList.add('has-topbar');
+    document.body.classList.toggle('has-chapters', multi);
+
+    // Dropdown
+    selectEl.innerHTML = '';
+    if(multi){
+      chapters.forEach((c, idx) => {
+        const opt = document.createElement('option');
+        opt.value = c.slug || String(idx);
+        opt.textContent = c.label || `Chapter ${idx+1}`;
+        opt.selected = idx === activeIdx;
+        selectEl.appendChild(opt);
+      });
+      selectEl.disabled = false;
+      selectEl.onchange = () => {
+        const chosen = selectEl.value;
+        const idx = chapters.findIndex(c => c.slug === chosen);
+        const nextIdx = idx >= 0 ? idx : 0;
+        setUrlChapter(sourceFile, chapters[nextIdx].slug);
+        renderActive(chapters, nextIdx, sourceFile);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      };
+    } else {
+      selectEl.disabled = true;
+      selectEl.onchange = null;
+    }
+
+    // Center label
+    const centerLabel = multi ? (chapters[activeIdx]?.label || '') : postTitleForBar;
+    currentEl.textContent = centerLabel;
+    currentEl.title = centerLabel;
+
+    // Prev/Next
+    if(!multi){
+      setLinkState(prevEl, false);
+      prevEl.onclick = null;
+      setLinkState(nextEl, false);
+      nextEl.onclick = null;
+      return;
+    }
+    const prev = activeIdx > 0 ? chapters[activeIdx - 1] : null;
+    const next = activeIdx < chapters.length - 1 ? chapters[activeIdx + 1] : null;
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('file', sourceFile);
+
+    if(prev){
+      url.searchParams.set('chapter', prev.slug);
+      setLinkState(prevEl, true, `← ${prev.label}`, url.toString());
+      prevEl.onclick = (e) => {
+        e.preventDefault();
+        setUrlChapter(sourceFile, prev.slug);
+        renderActive(chapters, activeIdx - 1, sourceFile);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      };
+    } else {
+      setLinkState(prevEl, false);
+      prevEl.onclick = null;
+    }
+
+    if(next){
+      url.searchParams.set('chapter', next.slug);
+      setLinkState(nextEl, true, `${next.label} →`, url.toString());
+      nextEl.onclick = (e) => {
+        e.preventDefault();
+        setUrlChapter(sourceFile, next.slug);
+        renderActive(chapters, activeIdx + 1, sourceFile);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      };
+    } else {
+      setLinkState(nextEl, false);
+      nextEl.onclick = null;
+    }
+  }
+
+  function renderActive(chapters, activeIdx, sourceFile){
+    const active = chapters[activeIdx] || chapters[0];
+    const hasChapters = chapters.length > 1;
+
+    if(hasChapters){
+      chapterPillEl.style.display = 'inline-flex';
+      chapterPillEl.textContent = active.label || '';
+    } else {
+      chapterPillEl.style.display = 'none';
+      chapterPillEl.textContent = '';
+    }
+
+    contentEl.innerHTML = renderTextToHtml(active.body);
+    renderChapterNav(chapters, activeIdx, sourceFile);
+  }
+
+  // Fetch the post source
+  const sourceFile = getSourceFile();
+  fetch(sourceFile).then(r=>{
+    if(!r.ok) throw new Error('no text file found');
+    return r.text();
+  }).then(txt=>{
+    const rawLines = txt.split(/\r?\n/);
+    const nonEmpty = rawLines.filter(line => String(line).trim().length > 0);
+    if(nonEmpty.length === 0){
+      titleEl.textContent = 'No post available';
+      dateEl.textContent = '';
+      contentEl.innerHTML = '<p>This post is not yet available.</p>';
+      postTitleForBar = 'Post';
+      topbarEl.hidden = false;
+      document.body.classList.add('has-topbar');
+      document.body.classList.remove('has-chapters');
+      renderChapterNav([{ label:'', slug:'', number:'', body:'' }], 0, sourceFile);
+      return;
+    }
+
+    // First non-empty line is title; optionally second non-empty line is date (YYYY-MM-DD)
+    const title = nonEmpty[0].replace(/^\uFEFF/, '').trim();
+    postTitleForBar = title || 'Post';
+    const maybeDate = nonEmpty.length > 1 ? nonEmpty[1].trim() : '';
+
+    // Find the position in rawLines where content starts (preserve intentional blank lines)
+    const titleNeedle = nonEmpty[0].replace(/^\uFEFF/, '').trim();
+    let titleIdx = rawLines.findIndex(l => String(l).replace(/^\uFEFF/, '').trim() === titleNeedle);
+    if(titleIdx < 0) titleIdx = 0;
+    let contentStartIdx = titleIdx + 1;
+
+    let date = '';
+    if(maybeDate && looksLikeDate(maybeDate)){
+      date = maybeDate;
+      const dateIdx = rawLines.slice(contentStartIdx).findIndex(l => String(l).trim() === maybeDate);
+      if(dateIdx >= 0) contentStartIdx = contentStartIdx + dateIdx + 1;
+    }
+
+    const content = rawLines.slice(contentStartIdx).join('\n').trim();
+    const chapters = parseChapters(content);
+    const activeIdx = pickActiveChapter(chapters);
+
+    titleEl.textContent = title;
+    if(date){
+      const dateObj = new Date(date);
+      dateEl.textContent = isNaN(dateObj.getTime())
+        ? date
+        : dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      dateEl.style.display = '';
+    } else {
+      dateEl.textContent = '';
+      dateEl.style.display = 'none';
+    }
+
+    // Update document title (include chapter if present)
+    const chapterLabel = chapters.length > 1 ? (chapters[activeIdx]?.label || '') : '';
+    document.title = chapterLabel ? `${title} — ${chapterLabel}` : title;
+
+    // Normalize URL params if a multi-chapter post has no chapter selected
+    if(chapters.length > 1 && !(new URL(window.location.href)).searchParams.get('chapter')){
+      setUrlChapter(sourceFile, chapters[activeIdx].slug);
+    } else {
+      setUrlChapter(sourceFile, chapters.length > 1 ? chapters[activeIdx].slug : '');
+    }
+
+    renderActive(chapters, activeIdx, sourceFile);
+  }).catch(()=>{
+    titleEl.textContent = 'Post not available';
+    dateEl.textContent = '';
+    dateEl.style.display = 'none';
+    contentEl.innerHTML = '<p>This post is not yet available.</p>';
+    postTitleForBar = 'Post';
+    topbarEl.hidden = false;
+    document.body.classList.add('has-topbar');
+    document.body.classList.remove('has-chapters');
+    renderChapterNav([{ label:'', slug:'', number:'', body:'' }], 0, sourceFile);
+  });
 })();
 </script>
 </body>
