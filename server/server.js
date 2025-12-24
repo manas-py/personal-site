@@ -1,9 +1,12 @@
 // server.js
-// Minimal Node/Express app to accept POST /api/signup and append to signup.txt
-// Usage:
-//   npm init -y
-//   npm i express body-parser
-//   node server.js
+// Minimal Node/Express server for:
+// - POST /api/signup          (append newsletter emails to files/sign.txt)
+// - GET  /api/archive/list    (list archive posts from /archive)
+// - GET  /archive/:filename   (serve a single archived post)
+//
+// Local usage:
+//   npm install
+//   npm start
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
@@ -40,52 +43,52 @@ if (!fs.existsSync(archiveDir)) {
 // Newsletter signup endpoint - appends email to files/sign.txt
 app.post('/api/signup', (req, res) => {
   const { email } = req.body || {};
-  
-  if(!email || typeof email !== 'string') {
+
+  if (!email || typeof email !== 'string') {
     console.error('Invalid email received:', email);
-    return res.status(400).json({ ok:false, error:'invalid email' });
+    return res.status(400).json({ ok: false, error: 'invalid email' });
   }
-  
+
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const normalizedEmail = email.toLowerCase().trim();
-  
-  if(!emailRegex.test(normalizedEmail)) {
+
+  if (!emailRegex.test(normalizedEmail)) {
     console.error('Invalid email format:', normalizedEmail);
-    return res.status(400).json({ ok:false, error:'invalid email format' });
+    return res.status(400).json({ ok: false, error: 'invalid email format' });
   }
-  
+
   // Append email to sign.txt (one email per line)
   const emailLine = `${normalizedEmail}\n`;
   fs.appendFile(SIGNUP_PATH, emailLine, { encoding: 'utf8' }, err => {
-    if(err) {
+    if (err) {
       console.error('Error writing to sign.txt:', err);
-      return res.status(500).json({ ok:false, error:'failed to save email' });
+      return res.status(500).json({ ok: false, error: 'failed to save email' });
     }
     console.log(`✓ New signup saved to files/sign.txt: ${normalizedEmail}`);
-    return res.json({ ok:true });
+    return res.json({ ok: true });
   });
 });
 
 // Archive listing endpoint - lists all text files from archive folder
 app.get('/api/archive/list', (req, res) => {
   const archiveDir = path.join(__dirname, 'archive');
-  
+
   // Ensure archive directory exists
   if (!fs.existsSync(archiveDir)) {
     fs.mkdirSync(archiveDir, { recursive: true });
     return res.json({ files: [] });
   }
-  
+
   fs.readdir(archiveDir, { withFileTypes: true }, (err, entries) => {
-    if(err) {
+    if (err) {
       console.error('Archive read error', err);
       return res.status(500).json({ error: 'Failed to read archive', files: [] });
     }
-    
+
     const files = [];
     entries.forEach(entry => {
-      if(entry.isFile() && /\.(txt|md|html)$/i.test(entry.name)) {
+      if (entry.isFile() && /\.(txt|md|html)$/i.test(entry.name)) {
         const filePath = path.join(archiveDir, entry.name);
         try {
           const stats = fs.statSync(filePath);
@@ -99,10 +102,10 @@ app.get('/api/archive/list', (req, res) => {
         }
       }
     });
-    
+
     // Sort by date (newest first)
     files.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+
     console.log(`Archive list: Found ${files.length} file(s)`);
     res.json({ files });
   });
@@ -112,17 +115,17 @@ app.get('/api/archive/list', (req, res) => {
 app.get('/archive/:filename', (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, 'archive', filename);
-  
+
   // Security: prevent directory traversal
   if (filename.includes('..') || filename.includes('/')) {
     return res.status(400).send('Invalid filename');
   }
-  
+
   // Only serve text files
   if (!/\.(txt|md|html)$/i.test(filename)) {
     return res.status(400).send('Invalid file type');
   }
-  
+
   if (fs.existsSync(filePath)) {
     res.sendFile(filePath);
   } else {
