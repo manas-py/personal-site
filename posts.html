@@ -332,12 +332,28 @@
   function getSourceFile(){
     const url = new URL(window.location.href);
     const fileParam = url.searchParams.get('file');
-    if(!fileParam) return '/files/chapters.txt';
+    if(!fileParam) return '';
     const cleaned = decodeURIComponent(fileParam).trim();
     // Basic safety: only allow same-origin absolute paths
-    if(!cleaned.startsWith('/')) return '/files/chapters.txt';
-    if(cleaned.includes('://')) return '/files/chapters.txt';
+    if(!cleaned.startsWith('/')) return '';
+    if(cleaned.includes('://')) return '';
     return cleaned;
+  }
+
+  async function fetchFirstAvailable(paths){
+    for(const p of paths){
+      if(!p) continue;
+      try{
+        const r = await fetch(p, { cache: 'no-store' });
+        if(r && r.ok){
+          const txt = await r.text();
+          return { path: p, text: txt };
+        }
+      } catch {
+        // continue trying next candidate
+      }
+    }
+    throw new Error('no text file found');
   }
 
   function pickActiveChapter(chapters){
@@ -446,11 +462,12 @@
   }
 
   // Fetch the post source
-  const sourceFile = getSourceFile();
-  fetch(sourceFile).then(r=>{
-    if(!r.ok) throw new Error('no text file found');
-    return r.text();
-  }).then(txt=>{
+  const explicitFile = getSourceFile();
+  const candidateFiles = explicitFile
+    ? [explicitFile]
+    : ['/files/fired.txt', '/files/chapters.txt', '/files/1pilot.txt'];
+
+  fetchFirstAvailable(candidateFiles).then(({ path: sourceFile, text: txt })=>{
     const rawLines = txt.split(/\r?\n/);
     const nonEmpty = rawLines.filter(line => String(line).trim().length > 0);
     if(nonEmpty.length === 0){
@@ -503,8 +520,10 @@
     const chapterLabel = chapters.length > 1 ? (chapters[activeIdx]?.label || '') : '';
     document.title = chapterLabel ? `${title} — ${chapterLabel}` : title;
 
-    // Normalize URL params if a multi-chapter post has no chapter selected
-    if(chapters.length > 1 && !(new URL(window.location.href)).searchParams.get('chapter')){
+    // Normalize URL params:
+    // - always set ?file= to the resolved file we loaded
+    // - if chapters exist and no explicit ?chapter= was provided, default to latest chapter
+    if (chapters.length > 1 && !(new URL(window.location.href)).searchParams.get('chapter')) {
       setUrlChapter(sourceFile, chapters[activeIdx].slug);
     } else {
       setUrlChapter(sourceFile, chapters.length > 1 ? chapters[activeIdx].slug : '');
@@ -520,7 +539,7 @@
     topbarEl.hidden = false;
     document.body.classList.add('has-topbar');
     document.body.classList.remove('has-chapters');
-    renderChapterNav([{ label:'', slug:'', number:'', body:'' }], 0, sourceFile);
+    renderChapterNav([{ label:'', slug:'', number:'', body:'' }], 0, explicitFile || '');
   });
 })();
 </script>
