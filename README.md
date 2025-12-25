@@ -4,7 +4,7 @@ Static personal website with a lightweight posts reader (`posts.html`) and an op
 
 ## Posts / chapters
 
-By default, `posts.html` tries (in order):
+By default, `posts.html` tries (in order), with safe fallbacks so renames don’t break the page:
 
 - `files/fired.txt`
 - `files/chapters.txt`

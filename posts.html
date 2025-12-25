@@ -344,7 +344,12 @@
     for(const p of paths){
       if(!p) continue;
       try{
-        const r = await fetch(p, { cache: 'no-store' });
+        // Keep this compatible with older/locked-down browsers:
+        // - no Request.cache options (some environments can throw)
+        // - add a cache-buster query to avoid stale CDNs
+        const u = new URL(p, window.location.href);
+        u.searchParams.set('_v', String(Date.now()));
+        const r = await fetch(u.toString());
         if(r && r.ok){
           const txt = await r.text();
           return { path: p, text: txt };
@@ -465,7 +470,16 @@
   const explicitFile = getSourceFile();
   const candidateFiles = explicitFile
     ? [explicitFile]
-    : ['/files/fired.txt', '/files/chapters.txt', '/files/1pilot.txt'];
+    : [
+        // absolute paths (when site is served from domain root)
+        '/files/fired.txt',
+        '/files/chapters.txt',
+        '/files/1pilot.txt',
+        // relative paths (when site is served from a subpath, e.g. project pages)
+        'files/fired.txt',
+        'files/chapters.txt',
+        'files/1pilot.txt'
+      ];
 
   fetchFirstAvailable(candidateFiles).then(({ path: sourceFile, text: txt })=>{
     const rawLines = txt.split(/\r?\n/);
