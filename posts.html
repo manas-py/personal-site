@@ -322,11 +322,15 @@
   }
 
   function setUrlChapter(source, chapterSlug){
-    const url = new URL(window.location.href);
-    if(source) url.searchParams.set('file', source);
-    if(chapterSlug) url.searchParams.set('chapter', chapterSlug);
-    else url.searchParams.delete('chapter');
-    history.replaceState({}, '', url.toString());
+    try{
+      const url = new URL(window.location.href);
+      if(source) url.searchParams.set('file', source);
+      if(chapterSlug) url.searchParams.set('chapter', chapterSlug);
+      else url.searchParams.delete('chapter');
+      history.replaceState({}, '', url.toString());
+    } catch {
+      // ignore URL/history failures in locked-down environments
+    }
   }
 
   function getSourceFile(){
@@ -341,24 +345,36 @@
   }
 
   async function fetchFirstAvailable(paths){
+    const attempts = [];
     for(const p of paths){
       if(!p) continue;
       try{
         // Keep this compatible with older/locked-down browsers:
         // - no Request.cache options (some environments can throw)
         // - add a cache-buster query to avoid stale CDNs
-        const u = new URL(p, window.location.href);
-        u.searchParams.set('_v', String(Date.now()));
-        const r = await fetch(u.toString());
+        let url;
+        try{
+          const u = new URL(p, window.location.href);
+          u.searchParams.set('_v', String(Date.now()));
+          url = u.toString();
+        } catch {
+          url = `${p}${p.includes('?') ? '&' : '?'}_v=${Date.now()}`;
+        }
+
+        const r = await fetch(url);
         if(r && r.ok){
           const txt = await r.text();
-          return { path: p, text: txt };
+          return { path: p, text: txt, tried: paths };
         }
+        attempts.push(`${p} -> HTTP ${r ? r.status : 'unknown'}`);
       } catch {
         // continue trying next candidate
+        attempts.push(`${p} -> fetch threw`);
       }
     }
-    throw new Error('no text file found');
+    const err = new Error('no text file found');
+    err._attempts = attempts;
+    throw err;
   }
 
   function pickActiveChapter(chapters){
@@ -481,7 +497,7 @@
         'files/1pilot.txt'
       ];
 
-  fetchFirstAvailable(candidateFiles).then(({ path: sourceFile, text: txt })=>{
+  fetchFirstAvailable(candidateFiles).then(({ path: sourceFile, text: txt, tried })=>{
     const rawLines = txt.split(/\r?\n/);
     const nonEmpty = rawLines.filter(line => String(line).trim().length > 0);
     if(nonEmpty.length === 0){
@@ -496,59 +512,91 @@
       return;
     }
 
-    // First non-empty line is title; optionally second non-empty line is date (YYYY-MM-DD)
-    const title = nonEmpty[0].replace(/^\uFEFF/, '').trim();
-    postTitleForBar = title || 'Post';
-    const maybeDate = nonEmpty.length > 1 ? nonEmpty[1].trim() : '';
+    try{
+      // If the first line looks like a chapter heading, treat the whole file as content
+      // and derive a readable title from the filename (e.g. fired.txt -> Fired).
+      const firstLine = nonEmpty[0].replace(/^\uFEFF/, '').trim();
+      const firstIsChapter = /^chapter\s+\d+(?:\.\d+)?/i.test(firstLine);
 
-    // Find the position in rawLines where content starts (preserve intentional blank lines)
-    const titleNeedle = nonEmpty[0].replace(/^\uFEFF/, '').trim();
-    let titleIdx = rawLines.findIndex(l => String(l).replace(/^\uFEFF/, '').trim() === titleNeedle);
-    if(titleIdx < 0) titleIdx = 0;
-    let contentStartIdx = titleIdx + 1;
+      let title = firstLine;
+      let contentStartIdx = 0;
+      let date = '';
 
-    let date = '';
-    if(maybeDate && looksLikeDate(maybeDate)){
-      date = maybeDate;
-      const dateIdx = rawLines.slice(contentStartIdx).findIndex(l => String(l).trim() === maybeDate);
-      if(dateIdx >= 0) contentStartIdx = contentStartIdx + dateIdx + 1;
-    }
+      if(firstIsChapter){
+        const base = String(sourceFile || '').split('/').pop() || 'Post';
+        title = base.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+        title = title ? (title.charAt(0).toUpperCase() + title.slice(1)) : 'Post';
+        contentStartIdx = 0;
+      } else {
+        const maybeDate = nonEmpty.length > 1 ? nonEmpty[1].trim() : '';
 
-    const content = rawLines.slice(contentStartIdx).join('\n').trim();
-    const chapters = parseChapters(content);
-    const activeIdx = pickActiveChapter(chapters);
+        // Find the position in rawLines where content starts (preserve intentional blank lines)
+        const titleNeedle = nonEmpty[0].replace(/^\uFEFF/, '').trim();
+        let titleIdx = rawLines.findIndex(l => String(l).replace(/^\uFEFF/, '').trim() === titleNeedle);
+        if(titleIdx < 0) titleIdx = 0;
+        contentStartIdx = titleIdx + 1;
 
-    titleEl.textContent = title;
-    if(date){
-      const dateObj = new Date(date);
-      dateEl.textContent = isNaN(dateObj.getTime())
-        ? date
-        : dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      dateEl.style.display = '';
-    } else {
+        if(maybeDate && looksLikeDate(maybeDate)){
+          date = maybeDate;
+          const dateIdx = rawLines.slice(contentStartIdx).findIndex(l => String(l).trim() === maybeDate);
+          if(dateIdx >= 0) contentStartIdx = contentStartIdx + dateIdx + 1;
+        }
+      }
+
+      postTitleForBar = title || 'Post';
+
+      const content = rawLines.slice(contentStartIdx).join('\n').trim();
+      const chapters = parseChapters(content);
+      const activeIdx = pickActiveChapter(chapters);
+
+      titleEl.textContent = title;
+      if(date){
+        const dateObj = new Date(date);
+        dateEl.textContent = isNaN(dateObj.getTime())
+          ? date
+          : dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        dateEl.style.display = '';
+      } else {
+        dateEl.textContent = '';
+        dateEl.style.display = 'none';
+      }
+
+      // Update document title (include chapter if present)
+      const chapterLabel = chapters.length > 1 ? (chapters[activeIdx]?.label || '') : '';
+      document.title = chapterLabel ? `${title} — ${chapterLabel}` : title;
+
+      // Normalize URL params:
+      // - always set ?file= to the resolved file we loaded
+      // - if chapters exist and no explicit ?chapter= was provided, default to latest chapter
+      if (chapters.length > 1 && !(new URL(window.location.href)).searchParams.get('chapter')) {
+        setUrlChapter(sourceFile, chapters[activeIdx].slug);
+      } else {
+        setUrlChapter(sourceFile, chapters.length > 1 ? chapters[activeIdx].slug : '');
+      }
+
+      renderActive(chapters, activeIdx, sourceFile);
+    } catch (e){
+      titleEl.textContent = 'Post not available';
       dateEl.textContent = '';
       dateEl.style.display = 'none';
+      const msg = (e && e.message) ? e.message : 'Unknown error';
+      const triedStr = Array.isArray(tried) ? tried.join(', ') : '';
+      contentEl.innerHTML =
+        '<p>This post is not yet available.</p>' +
+        `<details style="margin-top:14px;opacity:0.9"><summary style="cursor:pointer">Debug</summary>` +
+        `<pre style="white-space:pre-wrap;word-break:break-word;opacity:0.9">parse error: ${escapeHtml(msg)}\nsource: ${escapeHtml(String(sourceFile || ''))}\ntried: ${escapeHtml(triedStr)}</pre>` +
+        `</details>`;
     }
-
-    // Update document title (include chapter if present)
-    const chapterLabel = chapters.length > 1 ? (chapters[activeIdx]?.label || '') : '';
-    document.title = chapterLabel ? `${title} — ${chapterLabel}` : title;
-
-    // Normalize URL params:
-    // - always set ?file= to the resolved file we loaded
-    // - if chapters exist and no explicit ?chapter= was provided, default to latest chapter
-    if (chapters.length > 1 && !(new URL(window.location.href)).searchParams.get('chapter')) {
-      setUrlChapter(sourceFile, chapters[activeIdx].slug);
-    } else {
-      setUrlChapter(sourceFile, chapters.length > 1 ? chapters[activeIdx].slug : '');
-    }
-
-    renderActive(chapters, activeIdx, sourceFile);
-  }).catch(()=>{
+  }).catch((e)=>{
     titleEl.textContent = 'Post not available';
     dateEl.textContent = '';
     dateEl.style.display = 'none';
-    contentEl.innerHTML = '<p>This post is not yet available.</p>';
+    const attempts = Array.isArray(e && e._attempts) ? e._attempts.join('\n') : '';
+    contentEl.innerHTML =
+      '<p>This post is not yet available.</p>' +
+      `<details style="margin-top:14px;opacity:0.9"><summary style="cursor:pointer">Debug</summary>` +
+      `<pre style="white-space:pre-wrap;word-break:break-word;opacity:0.9">${escapeHtml(attempts || 'no details')}</pre>` +
+      `</details>`;
     postTitleForBar = 'Post';
     topbarEl.hidden = false;
     document.body.classList.add('has-topbar');
