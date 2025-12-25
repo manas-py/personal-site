@@ -484,18 +484,19 @@
 
   // Fetch the post source
   const explicitFile = getSourceFile();
+  const defaultCandidates = [
+    // absolute paths (when site is served from domain root)
+    '/files/fired.txt',
+    '/files/chapters.txt',
+    '/files/1pilot.txt',
+    // relative paths (when site is served from a subpath, e.g. project pages)
+    'files/fired.txt',
+    'files/chapters.txt',
+    'files/1pilot.txt'
+  ];
   const candidateFiles = explicitFile
-    ? [explicitFile]
-    : [
-        // absolute paths (when site is served from domain root)
-        '/files/fired.txt',
-        '/files/chapters.txt',
-        '/files/1pilot.txt',
-        // relative paths (when site is served from a subpath, e.g. project pages)
-        'files/fired.txt',
-        'files/chapters.txt',
-        'files/1pilot.txt'
-      ];
+    ? [explicitFile, ...defaultCandidates]
+    : defaultCandidates;
 
   fetchFirstAvailable(candidateFiles).then(({ path: sourceFile, text: txt, tried })=>{
     const rawLines = txt.split(/\r?\n/);
