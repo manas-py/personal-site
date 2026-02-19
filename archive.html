@@ -1,94 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<title>Archive</title>
+<title>Blog | manas.net</title>
 <style>
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#000;color:#d4a574;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-  .container{max-width:800px;margin:0 auto;padding:60px 24px;min-height:100vh;box-sizing:border-box;}
-  .header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid rgba(212,165,116,0.2);}
-  .back-link{display:inline-block;margin-bottom:24px;color:#d4a574;text-decoration:none;font-size:14px;opacity:0.8;transition:opacity 0.2s;}
-  .back-link:hover{opacity:1;}
-  h1{font-size:2.5rem;margin:0 0 12px 0;color:#e8c896;font-weight:700;line-height:1.2;}
-  .archive-list{list-style:none;padding:0;margin:0;}
-  .archive-list li{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(212,165,116,0.1);}
-  .archive-list li:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-  .archive-item{display:block;color:#d4a574;text-decoration:none;font-size:1.125rem;transition:color 0.2s;}
-  .archive-item:hover{color:#e8c896;}
-  .archive-date{font-size:0.9rem;color:#b89364;opacity:0.8;margin-top:4px;display:block;}
-  .empty-message{color:#b89364;opacity:0.8;font-style:italic;}
-  @media (max-width:800px){
-    .container{padding:40px 20px;}
-    h1{font-size:2rem;}
-    .archive-item{font-size:1rem;}
+  body {
+    background: #000;
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  header {
+    margin-bottom: 60px;
+  }
+  header a {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  header a:hover { color: #fff; }
+  
+  h1 { font-size: 24px; margin-bottom: 40px; letter-spacing: -0.5px; }
+  h2 { font-size: 18px; color: #ffd400; margin-top: 40px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .post-list, .category-list {
+    list-style: none;
+    padding: 0;
+  }
+  .post-item {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 10px;
+  }
+  .post-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+  }
+  .post-item span {
+    color: #666;
+    font-size: 13px;
+  }
+  
+  .category-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  .category-item a {
+    background: #111;
+    color: #fff;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #333;
+    transition: 0.2s;
+  }
+  .category-item a:hover {
+    background: #222;
+    border-color: #ffd400;
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <a href="/" class="back-link">← Back</a>
-      <h1>Archive</h1>
-    </div>
-    <div id="archive-content">
-      <p class="empty-message">Loading archive…</p>
-    </div>
-  </div>
 
-<script>
-(function(){
-  const contentEl = document.getElementById('archive-content');
-  
-  // Try API endpoint first (if using server.js)
-  fetch('/api/archive/list').then(r=>{
-    if(!r.ok) throw new Error('API not available');
-    return r.json();
-  }).then(data=>{
-    if(!data.files || data.files.length === 0){
-      contentEl.innerHTML = '<p class="empty-message">No archived posts yet. Add files to the <code>/archive</code> folder.</p>';
-      return;
-    }
-    
-    const ul = document.createElement('ul');
-    ul.className = 'archive-list';
-    
-    // Sort by date (newest first)
-    data.files.sort((a,b) => {
-      const dateA = new Date(a.date || a.name);
-      const dateB = new Date(b.date || b.name);
-      return dateB - dateA;
-    });
-    
-    data.files.forEach(file=>{
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = `/archive/${file.name}`;
-      a.className = 'archive-item';
-      a.textContent = file.title || file.name.replace(/\.(txt|md|html)$/i, '').replace(/_/g, ' ').replace(/-/g, ' ');
-      
-      if(file.date){
-        const dateSpan = document.createElement('span');
-        dateSpan.className = 'archive-date';
-        const dateObj = new Date(file.date);
-        dateSpan.textContent = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        a.appendChild(document.createElement('br'));
-        a.appendChild(dateSpan);
-      }
-      
-      li.appendChild(a);
-      ul.appendChild(li);
-    });
-    
-    contentEl.innerHTML = '';
-    contentEl.appendChild(ul);
-  }).catch(()=>{
-    contentEl.innerHTML = '<p class="empty-message">No archived posts yet. Add files to the <code>/archive</code> folder. For automatic listing, use <code>server.js</code>.</p>';
-  });
-})();
-</script>
+<div class="container">
+  <header>
+    <a href="/">← Back to Home</a>
+  </header>
+
+  <h1>Blog</h1>
+
+  <!-- Pinned Posts Section -->
+  <section>
+    <h2>Pinned Posts</h2>
+    <ul class="post-list">
+      <!-- Manually add your pinned posts from the /blog/ folder here -->
+      <li class="post-item">
+        <a href="/blog/welcome.html">Welcome to the new site</a>
+        <span>Oct 24, 2023</span>
+      </li>
+      <li class="post-item">
+        <a href="/blog/my-process.html">How I build things</a>
+        <span>Sept 12, 2023</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Categories Section -->
+  <section>
+    <h2>Categories</h2>
+    <ul class="category-list">
+      <!-- These links lead to pages filtering your blogs -->
+      <li class="category-item"><a href="/categories/tech.html">Technology</a></li>
+      <li class="category-item"><a href="/categories/life.html">Life</a></li>
+      <li class="category-item"><a href="/categories/art.html">Art & Design</a></li>
+      <li class="category-item"><a href="/categories/books.html">Books</a></li>
+    </ul>
+  </section>
+</div>
+
 </body>
 </html>
