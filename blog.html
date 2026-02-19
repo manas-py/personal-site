@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Blog | manas.net</title>
+  <link rel="icon" type="image/png" href="/files/favicon.png">
 <style>
   body {
     background: #000;
@@ -11,65 +12,102 @@
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     margin: 0;
-    padding: 40px 20px;
+    padding: 60px 20px;
   }
   .container {
     max-width: 600px;
     margin: 0 auto;
   }
   header {
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
   header a {
     color: #888;
     text-decoration: none;
     font-size: 14px;
+    transition: color 0.2s;
   }
-  header a:hover { color: #fff; }
+  header a:hover { color: #ffd400; }
   
-  h1 { font-size: 24px; margin-bottom: 40px; letter-spacing: -0.5px; }
-  h2 { font-size: 18px; color: #ffd400; margin-top: 40px; text-transform: uppercase; letter-spacing: 1px; }
+  h2 { 
+    font-size: 16px; 
+    color: #ffd400; 
+    margin-top: 40px; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    font-weight: 800;
+  }
 
-  .post-list, .category-list {
+  /* List Styles */
+  .post-list {
     list-style: none;
     padding: 0;
+    margin: 20px 0;
   }
   .post-item {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #222;
+    margin-bottom: 15px;
     padding-bottom: 10px;
+    border-bottom: 1px solid #1a1a1a;
   }
   .post-item a {
     color: #fff;
     text-decoration: none;
     font-size: 18px;
     display: block;
+    transition: all 0.2s ease;
+  }
+  /* Hover Highlight Feature */
+  .post-item a:hover {
+    color: #ffd400;
+    text-decoration: underline;
+    padding-left: 5px; /* Slight nudge for interactive feel */
   }
   .post-item span {
-    color: #666;
-    font-size: 13px;
+    color: #555;
+    font-size: 12px;
   }
   
-  .category-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+  /* Dropdown Styles */
+  details {
+    margin-bottom: 10px;
   }
-  .category-item a {
-    background: #111;
+  summary {
+    color: #ffd400;
+    font-weight: 800;
+    font-size: 18px;
+    cursor: pointer;
+    list-style: none; /* Removes default arrow */
+    padding: 10px 0;
+    transition: color 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+  }
+  summary::-webkit-details-marker {
+    display: none; /* Hide arrow in Safari */
+  }
+  summary:hover {
     color: #fff;
-    text-decoration: none;
-    padding: 15px;
-    display: block;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #333;
-    transition: 0.2s;
   }
-  .category-item a:hover {
-    background: #222;
-    border-color: #ffd400;
+  /* Add a small '+' or custom indicator if you want, 
+     but keeping it clean as requested */
+  summary::before {
+    content: "▸";
+    margin-right: 10px;
+    font-size: 14px;
+    transition: transform 0.2s;
   }
+  details[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  /* Content inside dropdown */
+  .category-content {
+    padding-left: 20px;
+    border-left: 1px solid #ffd400;
+    margin-left: 5px;
+  }
+
 </style>
 </head>
 <body>
@@ -79,13 +117,10 @@
     <a href="/">← Back to Home</a>
   </header>
 
-  <h1>Blog</h1>
-
-  <!-- Pinned Posts Section -->
+  <!-- Section 1: Pinned Posts -->
   <section>
     <h2>Pinned Posts</h2>
     <ul class="post-list">
-      <!-- Manually add your pinned posts from the /blog/ folder here -->
       <li class="post-item">
         <a href="/blog/welcome.html">Welcome to the new site</a>
         <span>Oct 24, 2023</span>
@@ -97,16 +132,57 @@
     </ul>
   </section>
 
-  <!-- Categories Section -->
-  <section>
-    <h2>Categories</h2>
-    <ul class="category-list">
-      <!-- These links lead to pages filtering your blogs -->
-      <li class="category-item"><a href="/categories/tech.html">Technology</a></li>
-      <li class="category-item"><a href="/categories/life.html">Life</a></li>
-      <li class="category-item"><a href="/categories/art.html">Art & Design</a></li>
-      <li class="category-item"><a href="/categories/books.html">Books</a></li>
-    </ul>
+  <!-- Section 2: Categories as Dropdowns -->
+  <section style="margin-top: 60px;">
+    
+    <details>
+      <summary>Technology</summary>
+      <div class="category-content">
+        <ul class="post-list">
+          <li class="post-item">
+            <a href="/blog/coding-tips.html">My VS Code Setup</a>
+            <span>Dec 01, 2023</span>
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Life</summary>
+      <div class="category-content">
+        <ul class="post-list">
+          <li class="post-item">
+            <a href="/blog/morning-routine.html">Morning Routines</a>
+            <span>Nov 15, 2023</span>
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Art & Design</summary>
+      <div class="category-content">
+        <ul class="post-list">
+          <li class="post-item">
+            <a href="/blog/minimalism.html">The Art of Minimalism</a>
+            <span>Aug 20, 2023</span>
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Books</summary>
+      <div class="category-content">
+        <ul class="post-list">
+          <li class="post-item">
+            <a href="/blog/reading-list-2023.html">2023 Reading List</a>
+            <span>Jan 05, 2023</span>
+          </li>
+        </ul>
+      </div>
+    </details>
+
   </section>
 </div>
 
