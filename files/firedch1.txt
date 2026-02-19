@@ -1,4 +1,151 @@
-Chapter 1: ﻿Off The 4
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Post Title | manas.net</title>
+<link rel="icon" type="image/png" href="/files/favicon.png">
+<style>
+  :root {
+    --bg: #070707;
+    --text: #d4a574;
+    --text-strong: #e8c896;
+    --muted: rgba(212, 165, 116, 0.6);
+    --accent: #ffd400; /* Matching the yellow from your blog page */
+    --border: rgba(212, 165, 116, 0.15);
+    --maxw: 720px; /* Narrower width for better readability */
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.75;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Navigation Bar */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(7, 7, 7, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 15px 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-left {
+    display: flex;
+    gap: 20px;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  nav a:hover {
+    color: var(--accent);
+  }
+
+  /* Icons */
+  .icon-home { font-size: 18px; }
+
+  /* Main Layout */
+  main {
+    max-width: var(--maxw);
+    margin: 60px auto 100px;
+    padding: 0 24px;
+  }
+
+  header {
+    margin-bottom: 50px;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: var(--text-strong);
+    line-height: 1.2;
+    margin-bottom: 10px;
+    letter-spacing: -0.03em;
+  }
+
+  .meta {
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Content Styling */
+  .content {
+    font-size: 1.15rem;
+  }
+
+  .content p {
+    margin-bottom: 1.8rem;
+  }
+
+  .content blockquote {
+    margin: 40px 0;
+    padding-left: 20px;
+    border-left: 2px solid var(--accent);
+    color: var(--text-strong);
+    font-style: italic;
+  }
+
+  .content hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 50px 0;
+  }
+
+  /* Back to top or end of post */
+  footer {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 2rem; }
+    main { margin-top: 40px; }
+  }
+</style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-left">
+      <!-- Home Symbol -->
+      <a href="/" title="Home"><span class="icon-home">⌂</span> Home</a>
+      <!-- Back to Blog -->
+      <a href="/blog.html">← Blog</a>
+    </div>
+  </nav>
+
+  <main>
+    <header>
+      <div class="meta">October 24, 2023</div>
+      <h1>This is your blog post title</h1>
+    </header>
+
+    <article class="content">
+      Chapter 1: ﻿Off The 4
 “Please do not hang up the phone. This is an important call regarding your business-” I hung up that phone faster than a Latina woman finds a seat in a busy subway, because there is no reason for an automated agent to be calling into a busy restaurant with an “important” phone call. More importantly, anything that is important would not have to state that it was important because it would be apparent that it was important. Anyone who has worked a day in customer service near a phone knows the tone of a scam call. I, however, enjoy them… sometimes. In my previous jobs as a cashier in retail stores, it wouldn’t be as busy, so I would try to make conversation with them. If the call made it up to a few minutes, I would pump with an “I love you, please marry me.” I cannot do that now, not just because they are all automated voice recordings, but also because I have two groups of four waiting for a table.
 It seems like in New York, all local stores are owned or managed by an immigrant to some degree. Either that or I just naturally always end up being drawn to one that is. For the restaurant I started working at, it is a Chinese woman in her early 40s. Her name is Faye. She is as thin as a leaf and loud as a truck. I would assume her philosophy on clothes is that they are an extension of one’s skin, because every time I see her, her pants have been as tight as her skin. Yet, she does not look bad overall; she just looks tense as she walks over to me and asks me to let the phone go to voicemail whenever it is busy, and take care of the floor, especially if my coworker is not present in the front. Dine-in first. That is a cardinal code for food service. So is a ding. You hear a bell ding from the kitchen, you run after it as soon as possible, so the food is served hot, especially if it is a thing like pho, which is our thing.
 kitchen dings. I walk towards the bell ding.
@@ -32,6 +179,12 @@ I wanted to confirm the whereabouts of my phone, and asked Faye if she had seen 
 I shouted to Sufjan to wait up for me. On my way home, I felt helpless enough to break down into tears while walking. My phone is my actual child. It has a name. It also has all my pictures from back home up until New York, none of which is backed up. It is the last piece of my life I left behind. I overworked some penny-paying job back home, and summed up the money to buy it, and my parents added a bit as a gift. I am attached to that phone as if it were an organ. It was unfortunately also always dying, and could not be tracked down. Sufjan hugged me and said, “Doesn’t matter about the pictures. You have so many more pictures to take.” When at the station, I looked up at him and said, “You need to stop doing coke.” “I will, habibi, now,” he said as he put out the remaining joint and put it in between my palms. What, I gestured.
 “This will be your friend on your way back home.”
 Many forms of grief and loss I witnessed that day, but the worst of all was that I would have to put up with this day all over again tomorrow, and countless days to come.
+    </article>
 
+    <footer>
+      <a href="/blog.html" style="color: var(--accent); text-decoration: none; font-weight: bold;">Back to all posts</a>
+    </footer>
+  </main>
 
-
+</body>
+</html>
